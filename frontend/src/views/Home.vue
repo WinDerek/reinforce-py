@@ -60,17 +60,9 @@ export default {
       AXIOS.get('/hello')
         .then(response => {
           console.log(response.data)
-
-          // this.loading = false
-
-          // MyNoty.success('查询成功！')
         })
         .catch(e => {
           console.log(e)
-
-          // this.loading = false
-
-          // MyNoty.error('查询失败，请检查重试')
         })
     }
   }

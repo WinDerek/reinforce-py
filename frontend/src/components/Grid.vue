@@ -84,6 +84,11 @@ export default {
   border-radius: 6px;
   border: 1px solid #6c7a89;
   margin: 2px;
+  background-color: #ececec;
+}
+
+.grid:hover {
+  cursor: pointer;
 }
 
 .wall {

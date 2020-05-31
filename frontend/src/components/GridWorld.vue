@@ -48,7 +48,7 @@ export default {
   width: 80vh;
   height: 80vh;
   padding: 12px;
-  background-color: #ececec;
+  background-color: #ffffff;
   border: 6px solid #2c3e50;
 
   margin: auto;
