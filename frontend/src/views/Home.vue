@@ -27,7 +27,8 @@ export default {
   data: function () {
     return {
       gridDataArray: [],
-      wallIndexArray: [ 21, 22, 23, 24, 26, 27, 28, 34, 44, 54, 64, 74 ]
+      wallIndexArray: [ 21, 22, 23, 24, 26, 27, 28, 34, 44, 54, 64, 74 ],
+      initialMinusRewardIndexArray: [ 33, 45, 46, 56, 58, 68, 73, 75, 76 ]
     }
   },
   created () {
@@ -54,6 +55,9 @@ export default {
 
     // Set the goal
     this.gridDataArray[55].goal = true;
+
+    // Set the initial -1 reward
+    this.initialMinusRewardIndexArray.forEach(index => this.gridDataArray[index].reward = -1.0)
   },
   methods: {
     hello() {

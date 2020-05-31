@@ -7,7 +7,7 @@
     <svg v-if="!gridData.wall" class="arrow" height="80%" width="80%" :view-box.camel="viewBoxStr">
         <line
           fill="none"
-          stroke="#336e7b"
+          stroke="#2e3131"
           stroke-width="3"
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -17,7 +17,7 @@
           :y2="pointArray[2][1]" />
         <line
           fill="none"
-          stroke="#336e7b"
+          stroke="#2e3131"
           stroke-width="3"
           stroke-linecap="round"
           stroke-linejoin="round"
