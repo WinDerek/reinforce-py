@@ -3,13 +3,27 @@
     <div class="state-value">{{gridData.stateValue.toFixed(2)}}</div>
 
     <svg class="arrow" height="80%" width="80%" :view-box.camel="viewBoxStr">
-        <polyline
+        <line
           fill="none"
           stroke="#336e7b"
           stroke-width="4"
           stroke-linecap="round"
           stroke-linejoin="round"
-          points="45.63,75.8 0.375,38.087 45.63,0.375"/>
+          :x1="pointArray[0][0]"
+          :y1="pointArray[0][1]"
+          :x2="pointArray[2][0]"
+          :y2="pointArray[2][1]" />
+        <line
+          fill="none"
+          stroke="#336e7b"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          :x1="pointArray[1][0]"
+          :y1="pointArray[1][1]"
+          :x2="pointArray[3][0]"
+          :y2="pointArray[3][1]" />
+        <circle :cx="borderLength / 2.0" :cy="borderLength / 2.0" r="4" stroke="#ffffff" fill="#ffffff" />
         Sorry, your browser does not support inline SVG.
     </svg>
   </div>
@@ -30,7 +44,8 @@ export default {
   },
   data: function () {
     return {
-      borderLength: 100
+      borderLength: 100,
+      arrowWidth: 10
     }
   },
   computed: {
@@ -40,11 +55,11 @@ export default {
     pointArray () {
       var pointArr = [];
 
-      var a = borderLength / 2.0;
+      var a = this.borderLength / 2.0;
 
       pointArr.push([a, a - a * this.gridData.policy[0]])
       pointArr.push([a + a * this.gridData.policy[1], a])
-      pointArr.push([a, a + this.gridData.policy[2]])
+      pointArr.push([a, a + a * this.gridData.policy[2]])
       pointArr.push([a - a * this.gridData.policy[3], a])
 
       return pointArr;
