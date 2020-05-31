@@ -45,16 +45,18 @@ export default {
 .grid-world {
   font-family: "roboto";
   box-sizing: border-box;
-  width: 50%;
+  height: 80%;
   margin: 0 auto;
 }
 
 .grid-container {
-  width: 50vw;
-  height: 50vw;
+  width: 80vh;
+  height: 80vh;
   padding: 12px;
   background-color: #ececec;
   border: 6px solid #2c3e50;
+
+  margin: auto;
 
   display: flex;
   flex-direction: column;
