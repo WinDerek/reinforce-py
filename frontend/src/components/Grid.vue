@@ -1,8 +1,8 @@
 <template>
-  <div class="grid">
-    <div class="state-value">{{gridData.stateValue.toFixed(2)}}</div>
+  <div class="grid" v-bind:class="{ wall: gridData.wall }">
+    <div v-if="!gridData.wall" class="state-value">{{gridData.stateValue.toFixed(2)}}</div>
 
-    <svg class="arrow" height="80%" width="80%" :view-box.camel="viewBoxStr">
+    <svg v-if="!gridData.wall" class="arrow" height="80%" width="80%" :view-box.camel="viewBoxStr">
         <line
           fill="none"
           stroke="#336e7b"
@@ -38,7 +38,7 @@ export default {
   },
   props: {
     gridData: {
-      type: Object, // gridIndex: 99, stateValue: 0.0, policy: [ 0.25, 0.25, 0.25, 0.25]
+      type: Object, // gridIndex: 99, wall: false, stateValue: 0.0, policy: [ 0.25, 0.25, 0.25, 0.25]
       required: true
     }
   },
@@ -76,15 +76,20 @@ export default {
 <style scoped>
 .grid {
   align-self: stretch;
-  flex-grow: 1;
+  width: 10%;
+  position: relative;
 
   border-radius: 6px;
-  border: 1px solid #000000;
+  border: 1px solid #6c7a89;
   margin: 2px;
 }
 
+.wall {
+  background-color: #6c7a89;
+}
+
 .state-value {
-  position: relative;
+  position: absolute;
   top: 2px;
   left: 2px;
   font-family: "monaco";
@@ -92,9 +97,9 @@ export default {
 }
 
 .arrow {
-  position: relative;
+  position: absolute;
   top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(-50%);
 }
 </style>

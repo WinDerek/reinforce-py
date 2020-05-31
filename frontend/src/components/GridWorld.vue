@@ -19,6 +19,7 @@ export default {
   data: function () {
     return {
       gridDataArray: [],
+      wallIndexArray: [ 21, 22, 23, 24, 26, 27, 28, 34, 44, 54, 64, 74 ]
     }
   },
   created () {
@@ -26,6 +27,7 @@ export default {
       for (var j = 0; j < 10; j++) {
         this.gridDataArray.push(
           {
+            wall: false,
             gridIndex: i * 10 + j,
             stateValue: 0.0,
             policy: [ 0.25, 0.25, 0.25, 0.25 ]
@@ -33,6 +35,8 @@ export default {
         );
       }
     }
+
+    this.wallIndexArray.forEach(wallIndex => this.gridDataArray[wallIndex].wall = true);
   }
 };
 </script>
