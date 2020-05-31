@@ -6,7 +6,7 @@
         <line
           fill="none"
           stroke="#336e7b"
-          stroke-width="4"
+          stroke-width="3"
           stroke-linecap="round"
           stroke-linejoin="round"
           :x1="pointArray[0][0]"
@@ -16,7 +16,7 @@
         <line
           fill="none"
           stroke="#336e7b"
-          stroke-width="4"
+          stroke-width="3"
           stroke-linecap="round"
           stroke-linejoin="round"
           :x1="pointArray[1][0]"
@@ -78,8 +78,8 @@ export default {
   align-self: stretch;
   flex-grow: 1;
 
-  border-radius: 4px;
-  border: 2px solid #000000;
+  border-radius: 6px;
+  border: 1px solid #000000;
   margin: 2px;
 }
 

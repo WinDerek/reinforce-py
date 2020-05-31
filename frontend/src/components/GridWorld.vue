@@ -50,6 +50,7 @@ export default {
   height: 50vw;
   padding: 12px;
   background-color: #ececec;
+  border: 6px solid #2c3e50;
 
   display: flex;
   flex-direction: column;
