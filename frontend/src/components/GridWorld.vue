@@ -1,8 +1,8 @@
 <template>
   <div class="grid-world">
     <div class="grid-container">
-      <div class="grid-row" v-for="i in 10">
-        <grid v-for="j in 10" v-model="gridDataArray[(i - 1) * 10 + j - 1]" />
+      <div class="grid-row" v-for="i in 10" v-bind:key="i">
+        <grid v-for="j in 10" v-bind:key="j" v-model="gridDataArray[(i - 1) * 10 + j - 1]" />
       </div>
     </div>
   </div>
@@ -27,7 +27,8 @@ export default {
         this.gridDataArray.push(
           {
             gridIndex: i * 10 + j,
-            actionArray: [ 0, 1, 2, 3 ]
+            stateValue: 0.0,
+            policy: [ 0.25, 0.25, 0.25, 0.25 ]
           }
         );
       }
@@ -40,14 +41,15 @@ export default {
 .grid-world {
   font-family: "roboto";
   box-sizing: border-box;
-  width: 40%;
+  width: 50%;
   margin: 0 auto;
 }
 
 .grid-container {
-  width: 40vw;
-  height: 40vw;
-  background-color: #2980b9;
+  width: 50vw;
+  height: 50vw;
+  padding: 12px;
+  background-color: #ececec;
 
   display: flex;
   flex-direction: column;
@@ -60,12 +62,5 @@ export default {
   align-items: stretch;
   width: 100%;
   height: 10%;
-
-  background-color: #f62459;
-}
-
-.grid {
-  align-self: stretch;
-  flex-grow: 1;
 }
 </style>

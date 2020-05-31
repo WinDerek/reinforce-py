@@ -5,7 +5,7 @@
     <el-button
       @click="hello"
       style="font-family: 'monaco';">
-      GET
+      Policy evaluation (1 sweep)
     </el-button>
 
     <GridWorld />

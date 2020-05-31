@@ -1,6 +1,17 @@
 <template>
   <div class="grid">
-    {{gridData.gridIndex}}
+    <div class="state-value">{{gridData.stateValue.toFixed(2)}}</div>
+
+    <svg class="arrow" height="80%" width="80%" :view-box.camel="viewBoxStr">
+        <polyline
+          fill="none"
+          stroke="#336e7b"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          points="45.63,75.8 0.375,38.087 45.63,0.375"/>
+        Sorry, your browser does not support inline SVG.
+    </svg>
   </div>
 </template>
 
@@ -13,12 +24,31 @@ export default {
   },
   props: {
     gridData: {
-      type: Object, // gridIndex: 99, actionArray: [ 0, 1, 2, 3 ]
+      type: Object, // gridIndex: 99, stateValue: 0.0, policy: [ 0.25, 0.25, 0.25, 0.25]
       required: true
     }
   },
   data: function () {
-    return {}
+    return {
+      borderLength: 100
+    }
+  },
+  computed: {
+    viewBoxStr () {
+        return `0 0 ${this.borderLength} ${this.borderLength}`;
+    },
+    pointArray () {
+      var pointArr = [];
+
+      var a = borderLength / 2.0;
+
+      pointArr.push([a, a - a * this.gridData.policy[0]])
+      pointArr.push([a + a * this.gridData.policy[1], a])
+      pointArr.push([a, a + this.gridData.policy[2]])
+      pointArr.push([a - a * this.gridData.policy[3], a])
+
+      return pointArr;
+    }
   },
   methods: {
     onGridClicked: function (index) {
@@ -32,5 +62,24 @@ export default {
 .grid {
   align-self: stretch;
   flex-grow: 1;
+
+  border-radius: 4px;
+  border: 2px solid #000000;
+  margin: 2px;
+}
+
+.state-value {
+  position: relative;
+  top: 2px;
+  left: 2px;
+  font-family: "monaco";
+  font-size: 0.8em;
+}
+
+.arrow {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 </style>
