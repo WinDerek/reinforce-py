@@ -32,20 +32,6 @@ export default {
     }
   },
   created () {
-    // for (var i = 0; i < 10; i++) {
-    //   for (var j = 0; j < 10; j++) {
-    //     this.gridDataArray.push(
-    //       {
-    //         wall: false,
-    //         gridIndex: i * 10 + j,
-    //         stateValue: 0.0,
-    //         policy: [ 0.25, 0.25, 0.25, 0.25 ]
-    //       }
-    //     );
-    //   }
-    // }
-
-    // this.wallIndexArray.forEach(wallIndex => this.gridDataArray[wallIndex].wall = true);
   }
 };
 </script>

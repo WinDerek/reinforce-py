@@ -1,6 +1,8 @@
 <template>
-  <div class="grid" v-bind:class="{ wall: gridData.wall }">
+  <div class="grid" v-bind:class="{ wall: gridData.wall, goal: gridData.goal }">
     <div v-if="!gridData.wall" class="state-value">{{gridData.stateValue.toFixed(2)}}</div>
+
+    <div v-if="!gridData.wall && (gridData.reward != 0.0)" class="reward">R={{gridData.reward.toFixed(1)}}</div>
 
     <svg v-if="!gridData.wall" class="arrow" height="80%" width="80%" :view-box.camel="viewBoxStr">
         <line
@@ -38,7 +40,7 @@ export default {
   },
   props: {
     gridData: {
-      type: Object, // gridIndex: 99, wall: false, stateValue: 0.0, policy: [ 0.25, 0.25, 0.25, 0.25]
+      type: Object, // gridIndex: 99, wall: false, goal: false, stateValue: 0.0, reward: 1.0, policy: [ 0.25, 0.25, 0.25, 0.25]
       required: true
     }
   },
@@ -88,12 +90,25 @@ export default {
   background-color: #6c7a89;
 }
 
+.goal {
+  background-color: #7befb2;
+}
+
 .state-value {
   position: absolute;
   top: 2px;
   left: 2px;
   font-family: "monaco";
   font-size: 0.8em;
+}
+
+.reward {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-family: "monaco";
+  font-size: 0.4em;
+  color: #f15a22;
 }
 
 .arrow {

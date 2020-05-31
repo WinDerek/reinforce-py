@@ -36,15 +36,24 @@ export default {
         this.gridDataArray.push(
           {
             wall: false,
+            goal: false,
             gridIndex: i * 10 + j,
             stateValue: 0.0,
+            reward: 0.0,
             policy: [ 0.25, 0.25, 0.25, 0.25 ]
           }
         );
       }
     }
 
+    // Set the walls
     this.wallIndexArray.forEach(wallIndex => this.gridDataArray[wallIndex].wall = true);
+
+    // Set special reward
+    this.gridDataArray[55].reward = 1.0;
+
+    // Set the goal
+    this.gridDataArray[55].goal = true;
   },
   methods: {
     hello() {
