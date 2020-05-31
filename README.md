@@ -4,3 +4,4 @@
 
 TODO:
 - [ ] Grids are not perfectly square.
+- [ ] More responsive for wide or tall screens.
