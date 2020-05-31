@@ -3,8 +3,8 @@
     <h1>Welcome to Grid World !</h1>
 
     <el-button
-      @click="hello"
-      style="font-family: 'monaco';">
+      @click="evaluatePolicy"
+      :loading="policyEvaluationLoading">
       Policy evaluation (1 sweep)
     </el-button>
 
@@ -18,6 +18,7 @@
 // @ is an alias to /src
 import GridWorld from '@/components/GridWorld.vue';
 import { AXIOS } from '../util/http-common.js';
+import axios from 'axios';
 
 export default {
   name: 'Home',
@@ -29,7 +30,8 @@ export default {
       initialGridDataArray: [],
       gridDataArray: [],
       wallIndexArray: [ 21, 22, 23, 24, 26, 27, 28, 34, 44, 54, 64, 74 ],
-      initialMinusRewardIndexArray: [ 33, 45, 46, 56, 58, 68, 73, 75, 76 ]
+      initialMinusRewardIndexArray: [ 33, 45, 46, 56, 58, 68, 73, 75, 76 ],
+      policyEvaluationLoading: false,
     }
   },
   created () {
@@ -71,15 +73,39 @@ export default {
     this.initialMinusRewardIndexArray.forEach(index => this.gridDataArray[index].reward = -1.0)
   },
   methods: {
-    hello() {
+    hello () {
+
       AXIOS.get('/hello')
         .then(response => {
-          console.log(response.data)
+          console.log(response.data);
         })
         .catch(e => {
-          console.log(e)
+          console.log(e);
         })
-    }
+    },
+    evaluatePolicy () {
+      if (this.policyEvaluationLoading) {
+        return;
+      }
+
+      this.policyEvaluationLoading = true;
+
+      AXIOS.post("/dynamic_programming/policy_evaluation", this.gridDataArray)
+      .then(response => {
+        var stateValueArray = response.data;
+        console.log(response.data);
+
+        for (var i = 0; i < this.gridDataArray.length; i++) {
+          this.gridDataArray[i].stateValue = stateValueArray[i];
+        }
+
+        this.policyEvaluationLoading = false;
+      }).catch(e => {
+        console.log(e);
+
+        this.policyEvaluationLoading = false;
+      })
+    },
   }
 };
 </script>
