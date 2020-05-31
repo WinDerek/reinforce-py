@@ -1,7 +1,6 @@
 <template>
   <div class="grid-world">
-    <h1>Welcome to Grid World</h1>
-    <div></div>
+    <div class="grid-container"></div>
   </div>
 </template>
 
@@ -14,4 +13,11 @@ export default {
 </script>
 
 <style scoped>
+.grid-world {
+  font-family: "roboto";
+}
+
+.grid-container {
+  width: 60%;
+}
 </style>
