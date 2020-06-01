@@ -45,8 +45,8 @@ export default {
 }
 
 .grid-container {
-  width: 80vh;
-  height: 80vh;
+  width: 75vh;
+  height: 75vh;
   padding: 12px;
   background-color: #ffffff;
   border: 6px solid #2c3e50;

@@ -1,5 +1,5 @@
 <template>
-  <div id="grid-world-dp">
+  <div class="grid-world-dp">
     <h1>Grid World: Dynamic Programming</h1>
 
     <el-row>
@@ -32,19 +32,21 @@
 
         <el-row style="padding: 12px;">
           <el-slider
-            v-model="valueIterationIntervalInMillis"
-            :min="100"
-            :step="10">
+            v-model="interval"
+            :min="10"
+            :max="100"
+            :step="10"
+            :format-tooltip="formatTooltip">
           </el-slider>
         </el-row>
       </el-col>
 
-      <el-col :span="18"></el-col>
+      <el-col :span="18">
+        <GridWorld
+          :grid-data-array="gridDataArray"
+          :wall-index-array="wallIndexArray" />
+      </el-col>
     </el-row>
-
-    <GridWorld
-      :grid-data-array="gridDataArray"
-      :wall-index-array="wallIndexArray" />
   </div>
 </template>
 
@@ -69,7 +71,12 @@ export default {
       policyEvaluationLoading: false,
       policyImprovementLoading: false,
       valueIterationRunning: false,
-      valueIterationIntervalInMillis: 100,
+      interval: 10
+    }
+  },
+  computed: {
+    valueIterationIntervalInMillis () {
+      return this.interval * 10;
     }
   },
   watch: {
@@ -217,10 +224,16 @@ export default {
         this.policyImprovementLoading = false;
       })
     },
+    formatTooltip: function (value) {
+      var seconds = value * 10 / 1000.0;
+      return seconds.toFixed(1) + "s";
+    }
   }
 };
 </script>
 
 <style scoped>
-
+.grid-world-dp {
+  flex-grow: 1;
+}
 </style>
