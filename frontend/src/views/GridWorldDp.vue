@@ -6,6 +6,14 @@
       <el-col :span="6" class="control-panel">
         <el-row style="padding: 12px;">
           <el-button
+            @click="reset"
+            :disabled="valueIterationRunning">
+            Reset Grid World
+          </el-button>
+        </el-row>
+
+        <el-row style="padding: 12px;">
+          <el-button
             @click="evaluatePolicy"
             :disabled="valueIterationRunning"
             :loading="policyEvaluationLoading">
@@ -25,7 +33,7 @@
         <el-row style="padding: 12px;">
           <el-button
             @click="toggleValueIteration">
-            Start value iteration
+            {{toggleValueIterationButtonText}}
           </el-button>
         </el-row>
 
@@ -72,6 +80,7 @@ import GridWorld from '@/components/GridWorld.vue';
 import { AXIOS } from '../util/http-common.js';
 import axios from 'axios';
 import MyMenu from '@/components/MyMenu.vue';
+// import _ from 'lodash';
 
 export default {
   name: 'GridWorldDp',
@@ -178,21 +187,23 @@ export default {
           }
         );
       }
-
-      this.gridDataArray = this.initialGridDataArray;
     }
 
+
+
     // Set the walls
-    this.wallIndexArray.forEach(wallIndex => this.gridDataArray[wallIndex].wall = true);
+    this.wallIndexArray.forEach(wallIndex => this.initialGridDataArray[wallIndex].wall = true);
 
     // Set special reward
-    this.gridDataArray[55].reward = 1.0;
+    this.initialGridDataArray[55].reward = 1.0;
 
     // Set the goal
-    this.gridDataArray[55].goal = true;
+    this.initialGridDataArray[55].goal = true;
 
     // Set the initial -1 reward
-    this.initialMinusRewardIndexArray.forEach(index => this.gridDataArray[index].reward = -1.0)
+    this.initialMinusRewardIndexArray.forEach(index => this.initialGridDataArray[index].reward = -1.0)
+
+    this.gridDataArray = JSON.parse(JSON.stringify(this.initialGridDataArray));
   },
   methods: {
     hello () {
@@ -282,6 +293,11 @@ export default {
       } else {
         this.toggleValueIterationButtonText = "Stop value iteration";
       }
+    },
+    reset: function () {
+      this.gridDataArray = JSON.parse(JSON.stringify(this.initialGridDataArray));
+      this.selectedIndex = -1;
+      this.valueIterationRunning = false;
     }
   }
 };

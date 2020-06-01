@@ -63,7 +63,14 @@ export const AXIOS = axios.create({
 })
 ```
 
-## 4. Disable source maps for production
+## 4. `lodash` and `lodash.clonedeep`
+
+```shell
+$ npm i --save lodash
+$ npm i --save lodash.clonedeep
+```
+
+## 5. Disable source maps for production
 
 In `./vue.config.js`, set `productionSourceMap` to false:
 
@@ -73,6 +80,6 @@ module.exports = {
 }
 ```
 
-## 5. Disable the error unexpected console statement for production build
+## 6. Disable the error unexpected console statement for production build
 
 [reference](https://stackoverflow.com/a/34215651/6086852)
