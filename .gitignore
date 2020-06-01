@@ -159,3 +159,6 @@ dmypy.json
 # Pyre type checker
 
 # End of https://www.gitignore.io/api/flask,python
+
+# VS code
+.vscode
