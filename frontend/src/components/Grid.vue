@@ -2,6 +2,10 @@
   <div class="grid" :class="{ wall: gridData.wall, goal: gridData.goal }" :style="{ backgroundColor: backgroundColor }">
     <div v-if="!gridData.wall" class="state-value">{{gridData.stateValue.toFixed(2)}}</div>
 
+    <img v-if="gridData.gridIndex == 0" class="type-icon" src="../assets/ic_start.png" />
+
+    <img v-if="gridData.goal" class="type-icon" src="../assets/ic_flag.png" />
+
     <div v-if="!gridData.wall && (gridData.reward != 0.0)" class="reward">R={{gridData.reward.toFixed(1)}}</div>
 
     <svg v-if="!gridData.wall" class="arrow" height="80%" width="80%" :view-box.camel="viewBoxStr">
@@ -167,6 +171,15 @@ export default {
   left: 2px;
   font-family: "monaco";
   font-size: 0.8em;
+}
+
+.type-icon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+
+  width: 12px;
+  height: 12px;
 }
 
 .reward {
