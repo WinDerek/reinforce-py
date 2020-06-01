@@ -90,7 +90,7 @@ export default {
                 return;
               }
 
-              setTimeout(function () { _evaluatePolicy() }, 1000);
+              setTimeout(function () { _evaluatePolicy() }, 200);
             }).catch(e => {
               console.log(e);
             });

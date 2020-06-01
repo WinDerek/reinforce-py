@@ -52,7 +52,7 @@ export default {
       positiveColor: "#00ff00",
       negativeColor: "#ff0000",
       wallColor: "#6c7a89",
-      stateValueUpperBound: 3.0
+      stateValueUpperBound: 1.5
     }
   },
   computed: {
@@ -175,7 +175,7 @@ export default {
   right: 2px;
   font-family: "monaco";
   font-size: 0.4em;
-  color: #f15a22;
+  color: #000000;
 }
 
 .arrow {
