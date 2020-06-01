@@ -2,11 +2,19 @@
   <div class="home">
     <h1>Welcome to Grid World !</h1>
 
-    <el-button
-      @click="evaluatePolicy"
-      :loading="policyEvaluationLoading">
-      Policy evaluation (1 sweep)
-    </el-button>
+    <el-row>
+      <el-button
+        @click="evaluatePolicy"
+        :loading="policyEvaluationLoading">
+        Policy evaluation (1 sweep)
+      </el-button>
+
+      <el-button
+        @click="improvePolicy"
+        :loading="policyImprovementLoading">
+        Policy improvement
+      </el-button>
+    </el-row>
 
     <GridWorld
       :grid-data-array="gridDataArray"
@@ -32,6 +40,7 @@ export default {
       wallIndexArray: [ 21, 22, 23, 24, 26, 27, 28, 34, 44, 54, 64, 74 ],
       initialMinusRewardIndexArray: [ 33, 45, 46, 56, 58, 68, 73, 75, 76 ],
       policyEvaluationLoading: false,
+      policyImprovementLoading: false,
     }
   },
   created () {
@@ -104,6 +113,29 @@ export default {
         console.log(e);
 
         this.policyEvaluationLoading = false;
+      })
+    },
+    improvePolicy () {
+      if (this.policyImproveLoading) {
+        return;
+      }
+
+      this.policyImprovementLoading = true;
+
+      AXIOS.post("/dynamic_programming/policy_improvement", this.gridDataArray)
+      .then(response => {
+        var policyArray = response.data;
+        console.log(response.data);
+
+        for (var i = 0; i < this.gridDataArray.length; i++) {
+          this.gridDataArray[i].policy = policyArray[i];
+        }
+
+        this.policyImprovementLoading = false;
+      }).catch(e => {
+        console.log(e);
+
+        this.policyImprovementLoading = false;
       })
     },
   }

@@ -76,3 +76,23 @@ def evaluate_policy_by_one_sweep(grid_data_list):
     for state_index, grid_data in enumerate(grid_data_list):
         grid_data_list[state_index]['stateValue'] = np.sum([grid_data['policy'][action] * (reward(action, state_index, grid_data_list) + GAMMA * grid_data_list[state_transition(action, state_index, grid_data_list)]['stateValue']) for action in actions_given_state(state_index)])
     return [grid_data['stateValue'] for grid_data in grid_data_list]
+
+
+def improve_policy(grid_data_list):
+    for state_index, grid_data in enumerate(grid_data_list):
+        q_list = []
+        actions = actions_given_state(state_index)
+        for action in actions:
+            state_to = state_transition(action, state_index, grid_data_list)
+            q_list.append(reward(action, state_index, grid_data_list) + GAMMA * grid_data_list[state_to]['stateValue'])
+        
+        optimal_q = max(q_list)
+
+        for index, action in enumerate(actions):
+            grid_data_list[state_index]['policy'][action] =  1.0 if (q_list[index] == optimal_q) else 0.0
+        
+        sum_value = sum(grid_data_list[state_index]['policy'])
+        for index, policy in enumerate(grid_data_list[state_index]['policy']):
+            grid_data_list[state_index]['policy'][index] /= sum_value
+
+    return [grid_data['policy'] for grid_data in grid_data_list]
