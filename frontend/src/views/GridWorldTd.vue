@@ -2,26 +2,224 @@
   <div class="grid-world-td">
     <h1>Grid World: Temporal-Difference</h1>
 
-    <p></p>
+    <el-row>
+      <el-col :span="6" class="control-panel">
+        <el-row style="padding: 12px;">
+          <el-button
+            @click="reset"
+            :disabled="sarsaRunning">
+            Reset Grid World
+          </el-button>
+        </el-row>
+
+        <el-row style="padding: 12px;">
+          <el-button
+            @click="toggleSarsa">
+            {{toggleSarsaButtonText}}
+          </el-button>
+        </el-row>
+
+        <el-row style="padding: 12px;">
+          Iteration interval (0.1s ~ 1.0s)
+          <el-slider
+            v-model="interval"
+            :min="10"
+            :max="100"
+            :step="10"
+            :format-tooltip="formatTooltip">
+          </el-slider>
+        </el-row>
+
+        <el-row style="padding: 12px;" v-if="selectedIndex != -1">
+          Min: <code>{{minReward.toFixed(2)}}</code>
+          Max: <code>{{maxReward.toFixed(2)}}</code>
+          Reward: <code>{{selectedReward}}</code>
+          <el-slider
+            v-model="rewardSliderValue"
+            :min="0"
+            :max="100"
+            :step="5"
+            :format-tooltip="formatRewardTooltip"
+            v-on:change="onRewardSliderValueChanged">
+          </el-slider>
+        </el-row>
+      </el-col>
+
+      <el-col :span="18">
+        <GridWorld
+          :grid-data-array="gridDataArray"
+          :wall-index-array="wallIndexArray"
+          :selectedIndex="selectedIndex"
+          v-on:on-selected-index-updated="onSelectedIndexUpdated" />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
+// @ is an alias to /src
+import GridWorld from '@/components/GridWorld.vue';
+import { AXIOS } from '../util/http-common.js';
+import axios from 'axios';
+import MyMenu from '@/components/MyMenu.vue';
+// import _ from 'lodash';
 
 export default {
   name: 'GridWorldTd',
   components: {
+    GridWorld, MyMenu
   },
   data: function () {
     return {
+      initialGridDataArray: [],
+      gridDataArray: [],
+      wallIndexArray: [ 21, 22, 23, 24, 26, 27, 28, 34, 44, 54, 64, 74 ],
+      initialMinusRewardIndexArray: [ 33, 45, 46, 56, 58, 68, 73, 75, 76 ],
+      sarsaRunning: false,
+      interval: 10,
+      selectedIndex: -1,
+      rewardSliderValue: 0,
+      minReward: -1.0,
+      maxReward: 1.0,
+      toggleSarsaButtonText: "Start sarsa"
+    }
+  },
+  computed: {
+    iterationIntervalInMillis () {
+      return this.interval * 10;
+    },
+    selectedReward () {
+      if (this.selectedIndex != -1) {
+        return this.gridDataArray[this.selectedIndex].reward.toFixed(2);
+      }
+      return null;
+    }
+  },
+  watch: {
+    valueIterationRunning: {
+      handler: function () {
+        var viewModel = this;
+
+        function _sarsaOneStep () {
+          AXIOS.post("/dynamic_programming/sarsa_one_step", viewModel.gridDataArray)
+            .then(response => {
+              var stateValueArray = response.data;
+
+              for (var i = 0; i < viewModel.gridDataArray.length; i++) {
+                viewModel.gridDataArray[i].stateValue = stateValueArray[i];
+              }
+
+              if (!viewModel.sarsaRunning) {
+                return;
+              }
+              setTimeout(function () { _sarsaOneStep() }, viewModel.iterationIntervalInMillis);
+            }).catch(e => {
+              console.log(e);
+            });
+        }
+
+        if (viewModel.sarsaRunning) {
+          _sarsaOneStep();
+        }
+      }
     }
   },
   created () {
+    for (var i = 0; i < 10; i++) {
+      for (var j = 0; j < 10; j++) {
+        var count = 0 + (i == 0) + (j == 9) + (i == 9) + (j == 0);
+        var prob = 1.0 / (4 - count);
+        var policyArray = [];
+        policyArray.push(i == 0 ? 0.0 : prob);
+        policyArray.push(j == 9 ? 0.0 : prob);
+        policyArray.push(i == 9 ? 0.0 : prob);
+        policyArray.push(j == 0 ? 0.0 : prob);
+
+        this.initialGridDataArray.push(
+          {
+            wall: false,
+            goal: false,
+            gridIndex: i * 10 + j,
+            stateValue: 0.0,
+            reward: 0.0,
+            policy: policyArray
+          }
+        );
+      }
+    }
+
+    // Set the walls
+    this.wallIndexArray.forEach(wallIndex => this.initialGridDataArray[wallIndex].wall = true);
+
+    // Set special reward
+    this.initialGridDataArray[55].reward = 1.0;
+
+    // Set the goal
+    this.initialGridDataArray[55].goal = true;
+
+    // Set the initial -1 reward
+    this.initialMinusRewardIndexArray.forEach(index => this.initialGridDataArray[index].reward = -1.0)
+
+    this.gridDataArray = JSON.parse(JSON.stringify(this.initialGridDataArray));
   },
   methods: {
+    formatTooltip: function (value) {
+      var seconds = value * 10 / 1000.0;
+      return seconds.toFixed(1) + "s";
+    },
+    onSelectedIndexUpdated: function (gridIndex, selected) {
+      if (selected) {
+        this.selectedIndex = -1;
+      } else {
+        if (this.selectedIndex == -1) {
+          this.selectedIndex = gridIndex;
+
+          this.rewardSliderValue = Math.round((this.gridDataArray[this.selectedIndex].reward - this.minReward) * 100.0 / (this.maxReward - this.minReward));
+        } else {
+          console.log("Cannot select multiple grids!");
+        }
+      }
+    },
+    onRewardSliderValueChanged: function (sliderValue) {
+      this.gridDataArray[this.selectedIndex].reward = (100 - sliderValue) * this.minReward / 100.0 + sliderValue * this.maxReward / 100.0;
+    },
+    formatRewardTooltip: function (value) {
+      return this.gridDataArray[this.selectedIndex].reward.toFixed(2);
+    },
+    toggleSarsa: function () {
+      this.sarsaRunning = !this.sarsaRunning;
+
+      if (this.sarsaRunning) {
+        this.toggleSarsaButtonText = "Stop sarsa";
+      } else {
+        this.toggleSarsaButtonText = "Start sarsa";
+      }
+    },
+    reset: function () {
+      this.gridDataArray = JSON.parse(JSON.stringify(this.initialGridDataArray));
+      this.selectedIndex = -1;
+      this.sarsaRunning = false;
+    }
   }
 };
 </script>
 
 <style scoped>
+* {
+  font-family: "roboto";
+}
+
+.grid-world-dp {
+  flex-grow: 1;
+}
+
+.control-panel {
+  padding: 12px;
+  border: 2px solid #2c3e50;
+  border-radius: 4px;
+}
+
+code {
+  font-family: "monaco";
+}
 </style>
