@@ -1,6 +1,6 @@
 <template>
-  <div class="home">
-    <h1>REINFORCEpy</h1>
+  <div class="Water World: Deep Q-Learning">
+    <h1>Water World: Deep Q-Learning</h1>
 
     <p></p>
   </div>
@@ -9,7 +9,7 @@
 <script>
 
 export default {
-  name: 'Home',
+  name: 'WaterWorldDqn',
   components: {
   },
   data: function () {

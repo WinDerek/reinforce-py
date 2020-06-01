@@ -41,6 +41,10 @@ h1 {
   color: #6c7a89;
 }
 
+p {
+  font-family: "roboto";
+}
+
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

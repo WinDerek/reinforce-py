@@ -1,6 +1,6 @@
 <template>
-  <div class="home">
-    <h1>REINFORCEpy</h1>
+  <div class="grid-world-td">
+    <h1>Grid World: Temporal-Difference</h1>
 
     <p></p>
   </div>
@@ -9,7 +9,7 @@
 <script>
 
 export default {
-  name: 'Home',
+  name: 'GridWorldTd',
   components: {
   },
   data: function () {
