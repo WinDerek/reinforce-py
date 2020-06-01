@@ -50,6 +50,7 @@ export default {
       policyEvaluationLoading: false,
       policyImprovementLoading: false,
       valueIterationRunning: false,
+      valueIterationIntervalInMillis: 100,
     }
   },
   watch: {
@@ -61,7 +62,7 @@ export default {
           AXIOS.post("/dynamic_programming/policy_evaluation", viewModel.gridDataArray)
             .then(response => {
               var stateValueArray = response.data;
-              console.log(response.data);
+              // console.log(response.data);
 
               for (var i = 0; i < viewModel.gridDataArray.length; i++) {
                 viewModel.gridDataArray[i].stateValue = stateValueArray[i];
@@ -70,7 +71,7 @@ export default {
               if (!viewModel.valueIterationRunning) {
                 return;
               }
-              setTimeout(function () { _improvePolicy() }, 200);
+              setTimeout(function () { _improvePolicy() }, viewModel.valueIterationIntervalInMillis);
             }).catch(e => {
               console.log(e);
             });
@@ -80,7 +81,7 @@ export default {
           AXIOS.post("/dynamic_programming/policy_improvement", viewModel.gridDataArray)
             .then(response => {
               var policyArray = response.data;
-              console.log(response.data);
+              // console.log(response.data);
 
               for (var i = 0; i < viewModel.gridDataArray.length; i++) {
                 viewModel.gridDataArray[i].policy = policyArray[i];
@@ -90,7 +91,7 @@ export default {
                 return;
               }
 
-              setTimeout(function () { _evaluatePolicy() }, 200);
+              setTimeout(function () { _evaluatePolicy() }, viewModel.valueIterationIntervalInMillis);
             }).catch(e => {
               console.log(e);
             });
@@ -161,7 +162,7 @@ export default {
       AXIOS.post("/dynamic_programming/policy_evaluation", this.gridDataArray)
       .then(response => {
         var stateValueArray = response.data;
-        console.log(response.data);
+        // console.log(response.data);
 
         for (var i = 0; i < this.gridDataArray.length; i++) {
           this.gridDataArray[i].stateValue = stateValueArray[i];
@@ -184,7 +185,7 @@ export default {
       AXIOS.post("/dynamic_programming/policy_improvement", this.gridDataArray)
       .then(response => {
         var policyArray = response.data;
-        console.log(response.data);
+        // console.log(response.data);
 
         for (var i = 0; i < this.gridDataArray.length; i++) {
           this.gridDataArray[i].policy = policyArray[i];
