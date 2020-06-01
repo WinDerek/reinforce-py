@@ -8,3 +8,4 @@ TODO:
 - [x] Adds the functionality to modify rewards.
 - [ ] More responsive for wide or tall screens.
 - [ ] Modify page title.
+- [ ] More elegant way of deep cloning using lodash.
