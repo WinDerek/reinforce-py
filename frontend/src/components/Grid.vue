@@ -1,9 +1,10 @@
 <template>
   <div
     class="grid"
-    :class="{ selected: selected }"
     :style="{ backgroundColor: backgroundColor }"
-    v-on:click="onClick">
+    v-on:click="onClick"
+    v-on:mouseenter="hover = true"
+    v-on:mouseleave="hover = false">
     <div v-if="!gridData.wall" class="state-value">{{gridData.stateValue.toFixed(2)}}</div>
 
     <img v-if="gridData.gridIndex == 0" class="type-icon" src="../assets/ic_start.png" />
@@ -64,6 +65,9 @@ export default {
       positiveColor: "#00ff00",
       negativeColor: "#ff0000",
       wallColor: "#6c7a89",
+      selectedColor: "#22a7f0",
+      hoverColor: "#89c4f4",
+      hover: false,
       stateValueUpperBound: 1.3
     }
   },
@@ -89,6 +93,14 @@ export default {
       
       if (wall) {
         return this.wallColor;
+      }
+
+      if (this.selected) {
+        return this.selectedColor;
+      }
+
+      if (this.hover) {
+        return this.hoverColor;
       }
 
       if (stateValue == 0.0) {
@@ -154,12 +166,19 @@ export default {
 
       // Trigger the event
       this.$emit('on-grid-clicked', this.gridData.gridIndex, this.selected);
-    },
+    }
   }
 }
 </script>
 
 <style scoped>
+* {
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;          /* Likely future */  
+}
+
 .grid {
   align-self: stretch;
   width: 10%;
@@ -168,14 +187,6 @@ export default {
   border-radius: 6px;
   border: 1px solid #6c7a89;
   margin: 2px;
-}
-
-.grid:hover {
-  cursor: pointer;
-}
-
-.selected {
-  background-color: #22a7f0 !important;
 }
 
 .state-value {
