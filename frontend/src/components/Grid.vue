@@ -1,6 +1,7 @@
 <template>
   <div
     class="grid"
+    :class="{ wall: gridData.wall }"
     :style="{ backgroundColor: backgroundColor }"
     v-on:click="onClick"
     v-on:mouseenter="hover = true"
@@ -187,6 +188,15 @@ export default {
   border-radius: 6px;
   border: 1px solid #6c7a89;
   margin: 2px;
+
+  transition: transform 0.2s;
+}
+
+.wall {
+}
+
+.grid:not(.wall):hover {
+  transform: translateY(-3px);
 }
 
 .state-value {
