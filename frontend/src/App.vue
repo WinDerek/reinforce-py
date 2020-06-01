@@ -1,8 +1,26 @@
 <template>
   <div id="app">
+    <my-menu></my-menu>
     <router-view/>
   </div>
 </template>
+
+<script>
+import MyMenu from '@/components/MyMenu.vue';
+
+export default {
+  name: 'App',
+  components: {
+    MyMenu
+  },
+  data: function () {
+    return {
+    }
+  },
+  created () {
+  }
+};
+</script>
 
 <style>
 @font-face {
@@ -15,9 +33,19 @@
   src: url("./assets/fonts/roboto.ttf");
 }
 
+h1 {
+  font-family: "roboto";
+  font-size: 2.4rem;
+  text-align: center;
+  text-shadow: 0 1px 1px #000;
+  color: #6c7a89;
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  display: flex;
+  flex-direction: column;
 }
 </style>
