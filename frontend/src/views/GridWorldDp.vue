@@ -23,14 +23,14 @@
         </el-row>
 
         <el-row style="padding: 12px;">
-          <el-switch
-            v-model="valueIterationRunning"
-            active-text="Value iteration running"
-            inactive-text="Start value iteration">
-          </el-switch>
+          <el-button
+            @click="toggleValueIteration">
+            Start value iteration
+          </el-button>
         </el-row>
 
         <el-row style="padding: 12px;">
+          Iteration interval (0.1s ~ 1.0s)
           <el-slider
             v-model="interval"
             :min="10"
@@ -91,7 +91,8 @@ export default {
       selectedIndex: -1,
       rewardSliderValue: 0,
       minReward: -1.0,
-      maxReward: 1.0
+      maxReward: 1.0,
+      toggleValueIterationButtonText: "Start value iteration"
     }
   },
   computed: {
@@ -272,6 +273,15 @@ export default {
     },
     formatRewardTooltip: function (value) {
       return this.gridDataArray[this.selectedIndex].reward.toFixed(2);
+    },
+    toggleValueIteration: function () {
+      this.valueIterationRunning = !this.valueIterationRunning;
+
+      if (this.valueIterationRunning) {
+        this.toggleValueIterationButtonText = "Start value iteration";
+      } else {
+        this.toggleValueIterationButtonText = "Stop value iteration";
+      }
     }
   }
 };
