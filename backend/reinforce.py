@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 
 BORDER_LENGTH = 10
@@ -71,7 +72,7 @@ def reward(action, state_from, grid_data_list):
 
 
 def evaluate_policy_by_one_sweep(grid_data_list):
-    print(reward(0, 65, grid_data_list))
+    # time.sleep(1.0)
     for state_index, grid_data in enumerate(grid_data_list):
         grid_data_list[state_index]['stateValue'] = np.sum([grid_data['policy'][action] * (reward(action, state_index, grid_data_list) + GAMMA * grid_data_list[state_transition(action, state_index, grid_data_list)]['stateValue']) for action in actions_given_state(state_index)])
     return [grid_data['stateValue'] for grid_data in grid_data_list]

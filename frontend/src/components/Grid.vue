@@ -1,5 +1,5 @@
 <template>
-  <div class="grid" v-bind:class="{ wall: gridData.wall, goal: gridData.goal }">
+  <div class="grid" :class="{ wall: gridData.wall, goal: gridData.goal }" :style="{ backgroundColor: backgroundColor }">
     <div v-if="!gridData.wall" class="state-value">{{gridData.stateValue.toFixed(2)}}</div>
 
     <div v-if="!gridData.wall && (gridData.reward != 0.0)" class="reward">R={{gridData.reward.toFixed(1)}}</div>
@@ -47,7 +47,12 @@ export default {
   data: function () {
     return {
       borderLength: 100,
-      arrowWidth: 10
+      arrowWidth: 10,
+      zeroColor: "#ececec",
+      positiveColor: "#00ff00",
+      negativeColor: "#ff0000",
+      wallColor: "#6c7a89",
+      stateValueUpperBound: 3.0
     }
   },
   computed: {
@@ -65,11 +70,69 @@ export default {
       pointArr.push([a - a * this.gridData.policy[3], a])
 
       return pointArr;
+    },
+    backgroundColor () {
+      var stateValue = this.gridData.stateValue;
+      var wall = this.gridData.wall;
+      
+      if (wall) {
+        return this.wallColor;
+      }
+
+      if (stateValue == 0.0) {
+        return this.zeroColor;
+      } else if (stateValue > 0.0) {
+        stateValue = Math.min(stateValue, this.stateValueUpperBound);
+        var ratio = stateValue / this.stateValueUpperBound;
+        var aStr = Math.round(ratio * 255).toString(16);
+        return this.positiveColor + aStr;
+      } else {
+        stateValue = Math.max(stateValue, -this.stateValueUpperBound);
+        var ratio = -stateValue / this.stateValueUpperBound;
+        var aStr = Math.round(ratio * 255).toString(16);
+        return this.negativeColor + aStr;
+      }
     }
   },
   methods: {
     onGridClicked: function (index) {
       this.$emit('onGridClicked', index)
+    },
+    rgbToHex: function (r, g, b) {
+      r = r.toString(16);
+      g = g.toString(16);
+      b = b.toString(16);
+
+      if (r.length == 1) {
+        r = "0" + r;
+      }
+      if (g.length == 1) {
+        g = "0" + g;
+      }
+      if (b.length == 1) {
+        b = "0" + b;
+      }
+
+      return "#" + r + g + b;
+    },
+    pixColor: function (colorFrom, colorTo, ratio) {
+      var rgbFrom = [
+        parseInt(colorFrom[2] + colorFrom[3], 16),
+        parseInt(colorFrom[4] + colorFrom[5], 16),
+        parseInt(colorFrom[6] + colorFrom[7], 16)
+      ];
+      var rgbTo = [
+        parseInt(colorTo[2] + colorTo[3], 16),
+        parseInt(colorTo[4] + colorTo[5], 16),
+        parseInt(colorTo[6] + colorTo[7], 16)
+      ];
+
+      var w1 = 1 - ratio;
+      var w2 = ratio;
+      var rgb = [Math.round(rgbFrom[0] * w1 + rgbTo[0] * w2),
+        Math.round(rgbFrom[1] * w1 + rgbTo[1] * w2),
+        Math.round(rgbFrom[2] * w1 + rgbTo[2] * w2)];
+      return this.rgbToHex(rgb[0], rgb[1], rgb[2]);
     }
   }
 }
@@ -84,7 +147,6 @@ export default {
   border-radius: 6px;
   border: 1px solid #6c7a89;
   margin: 2px;
-  background-color: #ececec;
 }
 
 .grid:hover {
@@ -92,11 +154,11 @@ export default {
 }
 
 .wall {
-  background-color: #6c7a89;
 }
 
 .goal {
-  background-color: #7befb2;
+  margin: 0px;
+  border: 3px solid #33ee99;
 }
 
 .state-value {
