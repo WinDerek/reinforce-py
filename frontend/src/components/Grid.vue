@@ -52,7 +52,7 @@ export default {
       positiveColor: "#00ff00",
       negativeColor: "#ff0000",
       wallColor: "#6c7a89",
-      stateValueUpperBound: 1.5
+      stateValueUpperBound: 1.3
     }
   },
   computed: {
@@ -158,7 +158,7 @@ export default {
 
 .goal {
   margin: 0px;
-  border: 3px solid #33ee99;
+  border: 3px solid #ffcb05;
 }
 
 .state-value {

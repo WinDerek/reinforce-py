@@ -233,6 +233,10 @@ export default {
 </script>
 
 <style scoped>
+* {
+  font-family: "roboto";
+}
+
 .grid-world-dp {
   flex-grow: 1;
 }
