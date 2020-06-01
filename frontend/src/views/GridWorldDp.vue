@@ -289,9 +289,9 @@ export default {
       this.valueIterationRunning = !this.valueIterationRunning;
 
       if (this.valueIterationRunning) {
-        this.toggleValueIterationButtonText = "Start value iteration";
-      } else {
         this.toggleValueIterationButtonText = "Stop value iteration";
+      } else {
+        this.toggleValueIterationButtonText = "Start value iteration";
       }
     },
     reset: function () {
