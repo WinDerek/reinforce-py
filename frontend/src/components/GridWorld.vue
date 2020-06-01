@@ -2,7 +2,12 @@
   <div class="grid-world">
     <div class="grid-container">
       <div class="grid-row" v-for="i in 10" v-bind:key="i">
-        <grid v-for="j in 10" v-bind:key="j" v-model="gridDataArray[(i - 1) * 10 + j - 1]" :selected="selectedArray[(i - 1) * 10 + j - 1]" v-on:on-grid-clicked="onGridClicked" />
+        <grid
+          v-for="j in 10" v-bind:key="j"
+          v-model="gridDataArray[(i - 1) * 10 + j - 1]"
+          :selected="selectedArray[(i - 1) * 10 + j - 1]"
+          v-on:on-grid-clicked="onGridClicked"
+          :current="(i - 1) * 10 + j - 1 == currentIndex" />
       </div>
     </div>
   </div>
@@ -28,6 +33,12 @@ export default {
     wallIndexArray: {
       type: Array,
       required: true
+    },
+    // The index of the current state
+    currentIndex: {
+      type: Number,
+      required: false,
+      default: -1
     }
   },
   components: { Grid },

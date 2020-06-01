@@ -23,9 +23,9 @@
           Iteration interval (0.1s ~ 1.0s)
           <el-slider
             v-model="interval"
-            :min="10"
+            :min="5"
             :max="100"
-            :step="10"
+            :step="5"
             :format-tooltip="formatTooltip">
           </el-slider>
         </el-row>
@@ -50,7 +50,8 @@
           :grid-data-array="gridDataArray"
           :wall-index-array="wallIndexArray"
           :selectedIndex="selectedIndex"
-          v-on:on-selected-index-updated="onSelectedIndexUpdated" />
+          v-on:on-selected-index-updated="onSelectedIndexUpdated"
+          :currentIndex="currentIndex" />
       </el-col>
     </el-row>
   </div>
@@ -62,7 +63,6 @@ import GridWorld from '@/components/GridWorld.vue';
 import { AXIOS } from '../util/http-common.js';
 import axios from 'axios';
 import MyMenu from '@/components/MyMenu.vue';
-// import _ from 'lodash';
 
 export default {
   name: 'GridWorldTd',
@@ -76,12 +76,14 @@ export default {
       wallIndexArray: [ 21, 22, 23, 24, 26, 27, 28, 34, 44, 54, 64, 74 ],
       initialMinusRewardIndexArray: [ 33, 45, 46, 56, 58, 68, 73, 75, 76 ],
       sarsaRunning: false,
-      interval: 10,
+      interval: 5,
       selectedIndex: -1,
       rewardSliderValue: 0,
       minReward: -1.0,
       maxReward: 1.0,
-      toggleSarsaButtonText: "Start sarsa"
+      toggleSarsaButtonText: "Start sarsa",
+      currentIndex: 0,
+      currentAction: 1
     }
   },
   computed: {
@@ -96,22 +98,34 @@ export default {
     }
   },
   watch: {
-    valueIterationRunning: {
+    sarsaRunning: {
       handler: function () {
         var viewModel = this;
 
         function _sarsaOneStep () {
-          AXIOS.post("/dynamic_programming/sarsa_one_step", viewModel.gridDataArray)
+          AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, currentAction: viewModel.currentAction, epsilon: 0.2, alpha: 0.1 })
             .then(response => {
-              var stateValueArray = response.data;
+              var newQ = response.data.newQ;
+              var newPolicy = response.data.newPolicy;
+              var stateValueFrom = response.data.stateValueFrom;
+              var stateValueTo = response.data.stateValueTo;
+              var stateTo = response.data.stateTo;
+              var actionTo = response.data.actionTo;
 
-              for (var i = 0; i < viewModel.gridDataArray.length; i++) {
-                viewModel.gridDataArray[i].stateValue = stateValueArray[i];
-              }
+              viewModel.gridDataArray[viewModel.currentIndex].q[viewModel.currentAction] = newQ;
+
+              viewModel.gridDataArray[stateTo].policy = newPolicy;
+
+              viewModel.gridDataArray[viewModel.currentIndex].stateValue = stateValueFrom;
+              viewModel.gridDataArray[stateTo].stateValue = stateValueTo;
+
+              viewModel.currentIndex = stateTo;
+              viewModel.currentAction = actionTo;
 
               if (!viewModel.sarsaRunning) {
                 return;
               }
+
               setTimeout(function () { _sarsaOneStep() }, viewModel.iterationIntervalInMillis);
             }).catch(e => {
               console.log(e);
@@ -142,7 +156,8 @@ export default {
             gridIndex: i * 10 + j,
             stateValue: 0.0,
             reward: 0.0,
-            policy: policyArray
+            policy: policyArray,
+            q: [ 0.0, 0.0, 0.0, 0.0 ]
           }
         );
       }

@@ -1,7 +1,7 @@
 <template>
   <div
     class="grid"
-    :class="{ wall: gridData.wall }"
+    :class="{ wall: gridData.wall, current: current }"
     :style="{ backgroundColor: backgroundColor }"
     v-on:click="onClick"
     v-on:mouseenter="hover = true"
@@ -49,10 +49,15 @@ export default {
   },
   props: {
     gridData: {
-      type: Object, // gridIndex: 99, wall: false, goal: false, stateValue: 0.0, reward: 1.0, policy: [ 0.25, 0.25, 0.25, 0.25]
+      type: Object, // gridIndex: 99, wall: false, goal: false, stateValue: 0.0, reward: 1.0, policy: [ 0.25, 0.25, 0.25, 0.25], q: [ 1.2, 2.4, -3.3, 0.7 ]
       required: true
     },
     selected: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    current: {
       type: Boolean,
       required: false,
       default: false
@@ -193,6 +198,12 @@ export default {
 }
 
 .wall {
+}
+
+.current {
+  border-radius: 0px;
+  border: 3px solid #9f5afd;
+  margin: 0px;
 }
 
 .grid:not(.wall):hover {

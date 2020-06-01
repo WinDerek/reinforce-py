@@ -1,5 +1,6 @@
 import numpy as np
 import time
+from backend.random_utils import choose_randomly
 
 
 BORDER_LENGTH = 10
@@ -96,3 +97,42 @@ def improve_policy(grid_data_list):
             grid_data_list[state_index]['policy'][index] /= sum_value
 
     return [grid_data['policy'] for grid_data in grid_data_list]
+
+
+def sarsa_one_step(grid_data_list, current_state, current_action, epsilon, alpha):
+    # State transition
+    state_to = state_transition(current_action, current_state, grid_data_list)
+    r = reward(current_action, current_state, grid_data_list)
+    
+    # Update the policy
+    q_list = []
+    actions = actions_given_state(state_to)
+    for action in actions:
+        q_list.append(grid_data_list[state_to]['q'][action])
+    optimal_q = max(q_list)
+    count = 0
+    for action in actions:
+        if grid_data_list[state_to]['q'][action] == optimal_q:
+            count += 1
+    for action in actions:
+        if grid_data_list[state_to]['q'][action] == optimal_q:
+            grid_data_list[state_to]['policy'][action] = epsilon / len(actions) + (1 - epsilon) / count
+        else:
+            grid_data_list[state_to]['policy'][action] = epsilon / len(actions)
+
+    action_to = choose_randomly({ action: grid_data_list[state_to]['policy'][action] for action in actions})
+    old_q = grid_data_list[current_state]['q'][current_action]
+    new_q = old_q + alpha * (r + GAMMA * grid_data_list[state_to]['q'][action_to] - old_q)
+
+    # Calculate the two new state values
+    stateValueFrom = sum([grid_data_list[current_state]['policy'][action] * grid_data_list[current_state]['q'][action] for action in actions_given_state(current_state)])
+    stateValueTo = sum([grid_data_list[state_to]['policy'][action] * grid_data_list[state_to]['q'][action] for action in actions_given_state(state_to)])
+
+    return {\
+        'newQ': new_q,\
+        'newPolicy': grid_data_list[state_to]['policy'],\
+        'stateValueFrom': stateValueFrom,\
+        'stateValueTo': stateValueTo,\
+        'stateTo': state_to,\
+        'actionTo': action_to\
+    }

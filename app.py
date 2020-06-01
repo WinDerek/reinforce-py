@@ -2,7 +2,7 @@ from flask import Flask, render_template
 from flask_cors import CORS
 from flask import request
 from flask import jsonify
-from backend.reinforce import evaluate_policy_by_one_sweep, improve_policy
+from backend.reinforce import evaluate_policy_by_one_sweep, improve_policy, sarsa_one_step as sarsa
 
 app = Flask(__name__)
 CORS(app)
@@ -30,3 +30,12 @@ def policy_improvement():
         print(grid_data)
 
     return jsonify(improve_policy(grid_data_list))
+
+
+@app.route("/api/dynamic_programming/sarsa_one_step", methods=['GET', 'POST'])
+def sarsa_one_step():
+    request_body = request.json
+
+    # print(request_body)
+
+    return jsonify(sarsa(request_body['gridDataArray'], request_body['currentState'], request_body['currentAction'], request_body['epsilon'], request_body['alpha']))
