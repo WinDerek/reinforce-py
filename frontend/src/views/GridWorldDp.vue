@@ -3,7 +3,7 @@
     <h1>Grid World: Dynamic Programming</h1>
 
     <el-row>
-      <el-col :span="6">
+      <el-col :span="6" class="control-panel">
         <el-row style="padding: 12px;">
           <el-button
             @click="evaluatePolicy"
@@ -40,7 +40,19 @@
           </el-slider>
         </el-row>
 
-        {{selectedIndex}}
+        <el-row style="padding: 12px;" v-if="selectedIndex != -1">
+          Min: <code>{{minReward.toFixed(2)}}</code>
+          Max: <code>{{maxReward.toFixed(2)}}</code>
+          Reward: <code>{{selectedReward}}</code>
+          <el-slider
+            v-model="rewardSliderValue"
+            :min="0"
+            :max="100"
+            :step="5"
+            :format-tooltip="formatRewardTooltip"
+            v-on:change="onRewardSliderValueChanged">
+          </el-slider>
+        </el-row>
       </el-col>
 
       <el-col :span="18">
@@ -77,11 +89,20 @@ export default {
       valueIterationRunning: false,
       interval: 10,
       selectedIndex: -1,
+      rewardSliderValue: 0,
+      minReward: -1.0,
+      maxReward: 1.0
     }
   },
   computed: {
     valueIterationIntervalInMillis () {
       return this.interval * 10;
+    },
+    selectedReward () {
+      if (this.selectedIndex != -1) {
+        return this.gridDataArray[this.selectedIndex].reward.toFixed(2);
+      }
+      return null;
     }
   },
   watch: {
@@ -239,10 +260,18 @@ export default {
       } else {
         if (this.selectedIndex == -1) {
           this.selectedIndex = gridIndex;
+
+          this.rewardSliderValue = Math.round((this.gridDataArray[this.selectedIndex].reward - this.minReward) * 100.0 / (this.maxReward - this.minReward));
         } else {
           console.log("Cannot select multiple grids!");
         }
       }
+    },
+    onRewardSliderValueChanged: function (sliderValue) {
+      this.gridDataArray[this.selectedIndex].reward = (100 - sliderValue) * this.minReward / 100.0 + sliderValue * this.maxReward / 100.0;
+    },
+    formatRewardTooltip: function (value) {
+      return this.gridDataArray[this.selectedIndex].reward.toFixed(2);
     }
   }
 };
@@ -255,5 +284,15 @@ export default {
 
 .grid-world-dp {
   flex-grow: 1;
+}
+
+.control-panel {
+  padding: 12px;
+  border: 2px solid #2c3e50;
+  border-radius: 4px;
+}
+
+code {
+  font-family: "monaco";
 }
 </style>
