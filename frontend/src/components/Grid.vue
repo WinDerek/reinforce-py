@@ -1,5 +1,9 @@
 <template>
-  <div class="grid" :class="{ wall: gridData.wall, goal: gridData.goal }" :style="{ backgroundColor: backgroundColor }">
+  <div
+    class="grid"
+    :class="{ selected: selected }"
+    :style="{ backgroundColor: backgroundColor }"
+    v-on:click="onClick">
     <div v-if="!gridData.wall" class="state-value">{{gridData.stateValue.toFixed(2)}}</div>
 
     <img v-if="gridData.gridIndex == 0" class="type-icon" src="../assets/ic_start.png" />
@@ -39,13 +43,17 @@
 export default {
   name: 'Grid',
   model: {
-    prop: 'gridData',
-    event: 'onGridClicked'
+    prop: 'gridData'
   },
   props: {
     gridData: {
       type: Object, // gridIndex: 99, wall: false, goal: false, stateValue: 0.0, reward: 1.0, policy: [ 0.25, 0.25, 0.25, 0.25]
       required: true
+    },
+    selected: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data: function () {
@@ -100,7 +108,7 @@ export default {
   },
   methods: {
     onGridClicked: function (index) {
-      this.$emit('onGridClicked', index)
+      this.$emit('on-grid-clicked', index)
     },
     rgbToHex: function (r, g, b) {
       r = r.toString(16);
@@ -137,7 +145,16 @@ export default {
         Math.round(rgbFrom[1] * w1 + rgbTo[1] * w2),
         Math.round(rgbFrom[2] * w1 + rgbTo[2] * w2)];
       return this.rgbToHex(rgb[0], rgb[1], rgb[2]);
-    }
+    },
+    onClick: function () {
+      // Do not trigger the on-grid-clicked event if this is a wall grid
+      if (this.gridData.wall) {
+        return;
+      }
+
+      // Trigger the event
+      this.$emit('on-grid-clicked', this.gridData.gridIndex, this.selected);
+    },
   }
 }
 </script>
@@ -157,12 +174,8 @@ export default {
   cursor: pointer;
 }
 
-.wall {
-}
-
-.goal {
-  margin: 0px;
-  border: 3px solid #ffcb05;
+.selected {
+  background-color: #22a7f0 !important;
 }
 
 .state-value {

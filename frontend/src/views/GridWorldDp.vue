@@ -39,12 +39,16 @@
             :format-tooltip="formatTooltip">
           </el-slider>
         </el-row>
+
+        {{selectedIndex}}
       </el-col>
 
       <el-col :span="18">
         <GridWorld
           :grid-data-array="gridDataArray"
-          :wall-index-array="wallIndexArray" />
+          :wall-index-array="wallIndexArray"
+          :selectedIndex="selectedIndex"
+          v-on:on-selected-index-updated="onSelectedIndexUpdated" />
       </el-col>
     </el-row>
   </div>
@@ -71,7 +75,8 @@ export default {
       policyEvaluationLoading: false,
       policyImprovementLoading: false,
       valueIterationRunning: false,
-      interval: 10
+      interval: 10,
+      selectedIndex: -1,
     }
   },
   computed: {
@@ -227,6 +232,17 @@ export default {
     formatTooltip: function (value) {
       var seconds = value * 10 / 1000.0;
       return seconds.toFixed(1) + "s";
+    },
+    onSelectedIndexUpdated: function (gridIndex, selected) {
+      if (selected) {
+        this.selectedIndex = -1;
+      } else {
+        if (this.selectedIndex == -1) {
+          this.selectedIndex = gridIndex;
+        } else {
+          console.log("Cannot select multiple grids!");
+        }
+      }
     }
   }
 };

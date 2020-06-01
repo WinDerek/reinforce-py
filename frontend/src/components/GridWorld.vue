@@ -2,7 +2,7 @@
   <div class="grid-world">
     <div class="grid-container">
       <div class="grid-row" v-for="i in 10" v-bind:key="i">
-        <grid v-for="j in 10" v-bind:key="j" v-model="gridDataArray[(i - 1) * 10 + j - 1]" />
+        <grid v-for="j in 10" v-bind:key="j" v-model="gridDataArray[(i - 1) * 10 + j - 1]" :selected="selectedArray[(i - 1) * 10 + j - 1]" v-on:on-grid-clicked="onGridClicked" />
       </div>
     </div>
   </div>
@@ -21,6 +21,10 @@ export default {
       type: Array,
       required: true
     },
+    selectedIndex: {
+      type: Number,
+      required: true
+    },
     wallIndexArray: {
       type: Array,
       required: true
@@ -31,7 +35,21 @@ export default {
     return {
     }
   },
+  computed: {
+    selectedArray () {
+      var array = [];
+      for (var i = 0; i < 10 * 10; i++) {
+        array.push(this.selectedIndex == i);
+      }
+      return array;
+    }
+  },
   created () {
+  },
+  methods: {
+    onGridClicked: function (gridIndex, selected) {
+      this.$emit('on-selected-index-updated', gridIndex, selected);
+    }
   }
 };
 </script>
