@@ -5,15 +5,23 @@
     <el-row>
       <el-button
         @click="evaluatePolicy"
+        :disabled="valueIterationRunning"
         :loading="policyEvaluationLoading">
         Policy evaluation (1 sweep)
       </el-button>
 
       <el-button
         @click="improvePolicy"
+        :disabled="valueIterationRunning"
         :loading="policyImprovementLoading">
         Policy improvement
       </el-button>
+
+      <el-switch
+        v-model="valueIterationRunning"
+        active-text="Value iteration running"
+        inactive-text="Start value iteration">
+      </el-switch>
     </el-row>
 
     <GridWorld
@@ -41,6 +49,57 @@ export default {
       initialMinusRewardIndexArray: [ 33, 45, 46, 56, 58, 68, 73, 75, 76 ],
       policyEvaluationLoading: false,
       policyImprovementLoading: false,
+      valueIterationRunning: false,
+    }
+  },
+  watch: {
+    valueIterationRunning: {
+      handler: function () {
+        var viewModel = this;
+
+        function _evaluatePolicy () {
+          AXIOS.post("/dynamic_programming/policy_evaluation", viewModel.gridDataArray)
+            .then(response => {
+              var stateValueArray = response.data;
+              console.log(response.data);
+
+              for (var i = 0; i < viewModel.gridDataArray.length; i++) {
+                viewModel.gridDataArray[i].stateValue = stateValueArray[i];
+              }
+
+              if (!viewModel.valueIterationRunning) {
+                return;
+              }
+              setTimeout(function () { _improvePolicy() }, 200);
+            }).catch(e => {
+              console.log(e);
+            });
+        }
+
+        function _improvePolicy () {
+          AXIOS.post("/dynamic_programming/policy_improvement", viewModel.gridDataArray)
+            .then(response => {
+              var policyArray = response.data;
+              console.log(response.data);
+
+              for (var i = 0; i < viewModel.gridDataArray.length; i++) {
+                viewModel.gridDataArray[i].policy = policyArray[i];
+              }
+
+              if (!viewModel.valueIterationRunning) {
+                return;
+              }
+
+              setTimeout(function () { _evaluatePolicy() }, 1000);
+            }).catch(e => {
+              console.log(e);
+            });
+        }
+
+        if (viewModel.valueIterationRunning) {
+          _evaluatePolicy();
+        }
+      }
     }
   },
   created () {
