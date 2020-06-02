@@ -3,9 +3,7 @@
     class="grid"
     :class="{ wall: gridData.wall, current: current }"
     :style="{ backgroundColor: backgroundColor }"
-    v-on:click="onClick"
-    v-on:mouseenter="hover = true"
-    v-on:mouseleave="hover = false">
+    v-on:click="onClick">
     <div v-if="!gridData.wall" class="state-value">{{gridData.stateValue.toFixed(2)}}</div>
 
     <img v-if="gridData.gridIndex == 0" class="type-icon" src="../assets/ic_start.png" />
@@ -35,7 +33,7 @@
           :y1="pointArray[1][1]"
           :x2="pointArray[3][0]"
           :y2="pointArray[3][1]" />
-        <circle :cx="borderLength / 2.0" :cy="borderLength / 2.0" r="4" stroke="#ffffff" fill="#ffffff" />
+        <circle :cx="borderLength / 2.0" :cy="borderLength / 2.0" :r="arrowHeaderWidth" stroke="#ffffff" fill="#ffffff" />
         Sorry, your browser does not support inline SVG.
     </svg>
   </div>
@@ -66,7 +64,7 @@ export default {
   data: function () {
     return {
       borderLength: 100,
-      arrowWidth: 10,
+      arrowHeaderWidth: 6, // Do not use your intuition. This is the height of /_________, not the height of <--------. I have to admit that the naming is not so concise :( but it's clear :)
       zeroColor: "#ececec",
       positiveColor: "#00ff00",
       negativeColor: "#ff0000",
@@ -84,12 +82,14 @@ export default {
     pointArray () {
       var pointArr = [];
 
-      var a = this.borderLength / 2.0;
+      var a = (this.borderLength - this.arrowHeaderWidth * 2.0) / 2.0;
+      var centerX = this.borderLength / 2.0;
+      var centerY = this.borderLength / 2.0;
 
-      pointArr.push([a, a - a * this.gridData.policy[0]])
-      pointArr.push([a + a * this.gridData.policy[1], a])
-      pointArr.push([a, a + a * this.gridData.policy[2]])
-      pointArr.push([a - a * this.gridData.policy[3], a])
+      pointArr.push([centerX, centerY - this.arrowHeaderWidth - a * this.gridData.policy[0]]);
+      pointArr.push([centerY + this.arrowHeaderWidth + a * this.gridData.policy[1], centerY]);
+      pointArr.push([centerX, centerY + this.arrowHeaderWidth + a * this.gridData.policy[2]]);
+      pointArr.push([centerY - this.arrowHeaderWidth - a * this.gridData.policy[3], centerX]);
 
       return pointArr;
     },

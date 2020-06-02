@@ -101,8 +101,8 @@ def improve_policy(grid_data_list):
 
 def sarsa_one_step(grid_data_list, current_state, current_action, epsilon, alpha):
     # State transition
-    state_to = state_transition(current_action, current_state, grid_data_list)
     r = reward(current_action, current_state, grid_data_list)
+    state_to = state_transition(current_action, current_state, grid_data_list)
     
     # Update the policy
     q_list = []
@@ -119,6 +119,7 @@ def sarsa_one_step(grid_data_list, current_state, current_action, epsilon, alpha
             grid_data_list[state_to]['policy'][action] = epsilon / len(actions) + (1 - epsilon) / count
         else:
             grid_data_list[state_to]['policy'][action] = epsilon / len(actions)
+            print(grid_data_list[state_to]['policy'][action])
 
     action_to = choose_randomly({ action: grid_data_list[state_to]['policy'][action] for action in actions})
     old_q = grid_data_list[current_state]['q'][current_action]

@@ -14,6 +14,14 @@
 
         <el-row style="padding: 12px;">
           <el-button
+            @click="sarsaOneStep"
+            :disabled="sarsaOneStepPending">
+            Sarsa 1 step
+          </el-button>
+        </el-row>
+
+        <el-row style="padding: 12px;">
+          <el-button
             @click="toggleSarsa">
             {{toggleSarsaButtonText}}
           </el-button>
@@ -83,12 +91,14 @@ export default {
       maxReward: 1.0,
       toggleSarsaButtonText: "Start sarsa",
       currentIndex: 0,
-      currentAction: 1
+      currentAction: 1,
+      sarsaOneStepPending: false
     }
   },
   computed: {
     iterationIntervalInMillis () {
-      return this.interval * 10;
+      // return this.interval * 10;
+      return 1;
     },
     selectedReward () {
       if (this.selectedIndex != -1) {
@@ -214,6 +224,39 @@ export default {
       this.gridDataArray = JSON.parse(JSON.stringify(this.initialGridDataArray));
       this.selectedIndex = -1;
       this.sarsaRunning = false;
+    },
+    sarsaOneStep() {
+      if (this.sarsaOneStepPending) {
+        return;
+      }
+
+      this.sarsaOneStepPending = true;
+
+      AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1 })
+            .then(response => {
+              var newQ = response.data.newQ;
+              var newPolicy = response.data.newPolicy;
+              var stateValueFrom = response.data.stateValueFrom;
+              var stateValueTo = response.data.stateValueTo;
+              var stateTo = response.data.stateTo;
+              var actionTo = response.data.actionTo;
+
+              this.gridDataArray[this.currentIndex].q[this.currentAction] = newQ;
+
+              this.gridDataArray[stateTo].policy = newPolicy;
+
+              this.gridDataArray[this.currentIndex].stateValue = stateValueFrom;
+              this.gridDataArray[stateTo].stateValue = stateValueTo;
+
+              this.currentIndex = stateTo;
+              this.currentAction = actionTo;
+
+              this.sarsaOneStepPending = false;
+            }).catch(e => {
+              console.log(e);
+
+              this.sarsaOneStepPending = false;
+            });
     }
   }
 };
