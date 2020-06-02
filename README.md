@@ -8,8 +8,10 @@ The naming of this repository is showing respect to [REINFORCEjs](https://github
 
 ## TODO
 
-- [ ] Refine the arrows.
-- [ ] More responsive for wide or tall screens.
-- [ ] Modify page title.
-- [ ] More elegant way of deep cloning using lodash.
+- [ ] Make grids perfect square
+- [ ] Refine the arrows
+- [ ] Replace HTTP with socket
+- [ ] More responsive for wide or tall screens
+- [ ] Modify page title
+- [ ] More elegant way of deep cloning using lodash
 - [ ] Functionality to play with trained policy

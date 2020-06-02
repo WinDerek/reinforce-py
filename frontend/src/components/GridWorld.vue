@@ -69,13 +69,14 @@ export default {
 .grid-world {
   font-family: "roboto";
   box-sizing: border-box;
-  height: 80%;
-  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  margin: auto;
 }
 
 .grid-container {
-  width: 75vh;
-  height: 75vh;
+  width: 65vh;
+  height: 65vh;
   padding: 12px;
   background-color: #ffffff;
   border: 6px solid #2c3e50;

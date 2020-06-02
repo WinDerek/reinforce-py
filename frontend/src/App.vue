@@ -35,7 +35,7 @@ export default {
 
 h1 {
   font-family: "roboto";
-  font-size: 2.4rem;
+  font-size: 2.0rem;
   text-align: center;
   text-shadow: 0 1px 1px #000;
   color: #6c7a89;
@@ -49,7 +49,11 @@ p {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  width: 100vw;
+  height: 100vh;
+
   display: flex;
   flex-direction: column;
+  align-items: stretch;
 }
 </style>
