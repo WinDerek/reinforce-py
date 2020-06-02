@@ -2,7 +2,7 @@ from flask import Flask, render_template
 from flask_cors import CORS
 from flask import request
 from flask import jsonify
-from backend.reinforce import evaluate_policy_by_one_sweep, improve_policy, sarsa_one_step as sarsa
+from backend.reinforce import evaluate_policy_by_one_sweep, improve_policy, sarsa_one_step as sarsa, q_learning_one_step as q_learning
 
 app = Flask(__name__)
 CORS(app)
@@ -36,6 +36,11 @@ def policy_improvement():
 def sarsa_one_step():
     request_body = request.json
 
-    # print(request_body)
-
     return jsonify(sarsa(request_body['gridDataArray'], request_body['currentState'], request_body['currentAction'], request_body['epsilon'], request_body['alpha']))
+
+
+@app.route("/api/dynamic_programming/q_learning_one_step", methods=['GET', 'POST'])
+def q_learning_one_step():
+    request_body = request.json
+
+    return jsonify(q_learning(request_body['gridDataArray'], request_body['currentState'], request_body['epsilon'], request_body['alpha']))

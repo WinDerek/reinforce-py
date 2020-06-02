@@ -137,3 +137,39 @@ def sarsa_one_step(grid_data_list, current_state, current_action, epsilon, alpha
         'stateTo': state_to,\
         'actionTo': action_to\
     }
+
+
+def q_learning_one_step(grid_data_list, current_state, epsilon, alpha):
+    # Update the policy
+    q_list = []
+    actions = actions_given_state(current_state)
+    for action in actions:
+        q_list.append(grid_data_list[current_state]['q'][action])
+    optimal_q = max(q_list)
+    count = 0
+    for action in actions:
+        if grid_data_list[current_state]['q'][action] == optimal_q:
+            count += 1
+    for action in actions:
+        if grid_data_list[current_state]['q'][action] == optimal_q:
+            grid_data_list[current_state]['policy'][action] = epsilon / len(actions) + (1 - epsilon) / count
+        else:
+            grid_data_list[current_state]['policy'][action] = epsilon / len(actions)
+            print(grid_data_list[current_state]['policy'][action])
+
+    action = choose_randomly({ action: grid_data_list[current_state]['policy'][action] for action in actions})
+    state_to = state_transition(action, current_state, grid_data_list)
+    r = reward(action, current_state, grid_data_list)
+    old_q = grid_data_list[current_state]['q'][action]
+    new_q = old_q + alpha * (r + GAMMA * max([grid_data_list[state_to]['q'][a] for a in actions_given_state(state_to)]) - old_q)
+
+    # Calculate the two new state values
+    newStateValue = sum([grid_data_list[current_state]['policy'][action] * grid_data_list[current_state]['q'][action] for action in actions_given_state(current_state)])
+
+    return {\
+        'newQ': new_q,\
+        'newPolicy': grid_data_list[current_state]['policy'],\
+        'newStateValue': newStateValue,\
+        'action': action,\
+        'stateTo': state_to
+    }

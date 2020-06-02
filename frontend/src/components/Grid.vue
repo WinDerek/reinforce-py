@@ -204,6 +204,7 @@ export default {
   border-radius: 0px;
   border: 3px solid #9f5afd;
   margin: 0px;
+  background-color: #9f5afd66 !important;
 }
 
 .grid:not(.wall):hover {

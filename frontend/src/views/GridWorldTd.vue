@@ -15,7 +15,7 @@
         <el-row style="padding: 12px;">
           <el-button
             @click="sarsaOneStep"
-            :disabled="sarsaOneStepPending">
+            :disabled="sarsaOneStepPending || sarsaRunning">
             Sarsa 1 step
           </el-button>
         </el-row>
@@ -24,6 +24,21 @@
           <el-button
             @click="toggleSarsa">
             {{toggleSarsaButtonText}}
+          </el-button>
+        </el-row>
+
+        <el-row style="padding: 12px;">
+          <el-button
+            @click="qLearningOneStep"
+            :disabled="qLearningOneStepPending || qLearningRunning">
+            Q-Learning 1 step
+          </el-button>
+        </el-row>
+
+        <el-row style="padding: 12px;">
+          <el-button
+            @click="toggleQLearning">
+            {{toggleQLearningButtonText}}
           </el-button>
         </el-row>
 
@@ -83,16 +98,19 @@ export default {
       gridDataArray: [],
       wallIndexArray: [ 21, 22, 23, 24, 26, 27, 28, 34, 44, 54, 64, 74 ],
       initialMinusRewardIndexArray: [ 33, 45, 46, 56, 58, 68, 73, 75, 76 ],
-      sarsaRunning: false,
       interval: 5,
       selectedIndex: -1,
       rewardSliderValue: 0,
       minReward: -1.0,
       maxReward: 1.0,
-      toggleSarsaButtonText: "Start sarsa",
       currentIndex: 0,
       currentAction: 1,
-      sarsaOneStepPending: false
+      toggleSarsaButtonText: "Start sarsa",
+      sarsaRunning: false,
+      sarsaOneStepPending: false,
+      toggleQLearningButtonText: "Start Q-learning",
+      qLearningRunning: false,
+      qLearningOneStepPending: false
     }
   },
   computed: {
@@ -144,6 +162,42 @@ export default {
 
         if (viewModel.sarsaRunning) {
           _sarsaOneStep();
+        }
+      }
+    },
+    qLearningRunning: {
+      handler: function () {
+        var viewModel = this;
+
+        function _qLearningOneStep () {
+          AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, epsilon: 0.1, alpha: 0.1 })
+            .then(response => {
+              var newQ = response.data.newQ;
+              var newPolicy = response.data.newPolicy;
+              var newStateValue = response.data.newStateValue;
+              var action = response.data.action;
+              var stateTo = response.data.stateTo;
+
+              viewModel.gridDataArray[viewModel.currentIndex].q[action] = newQ;
+
+              viewModel.gridDataArray[viewModel.currentIndex].policy = newPolicy;
+
+              viewModel.gridDataArray[viewModel.currentIndex].stateValue = newStateValue;
+
+              viewModel.currentIndex = stateTo;
+
+              if (!viewModel.qLearningRunning) {
+                return;
+              }
+
+              setTimeout(function () { _qLearningOneStep() }, viewModel.iterationIntervalInMillis);
+            }).catch(e => {
+              console.log(e);
+            });
+        }
+
+        if (viewModel.qLearningRunning) {
+          _qLearningOneStep();
         }
       }
     }
@@ -211,6 +265,11 @@ export default {
     formatRewardTooltip: function (value) {
       return this.gridDataArray[this.selectedIndex].reward.toFixed(2);
     },
+    reset: function () {
+      this.gridDataArray = JSON.parse(JSON.stringify(this.initialGridDataArray));
+      this.selectedIndex = -1;
+      this.sarsaRunning = false;
+    },
     toggleSarsa: function () {
       this.sarsaRunning = !this.sarsaRunning;
 
@@ -219,11 +278,6 @@ export default {
       } else {
         this.toggleSarsaButtonText = "Start sarsa";
       }
-    },
-    reset: function () {
-      this.gridDataArray = JSON.parse(JSON.stringify(this.initialGridDataArray));
-      this.selectedIndex = -1;
-      this.sarsaRunning = false;
     },
     sarsaOneStep() {
       if (this.sarsaOneStepPending) {
@@ -234,6 +288,8 @@ export default {
 
       AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1 })
             .then(response => {
+              console.log(response.data);
+
               var newQ = response.data.newQ;
               var newPolicy = response.data.newPolicy;
               var stateValueFrom = response.data.stateValueFrom;
@@ -256,6 +312,48 @@ export default {
               console.log(e);
 
               this.sarsaOneStepPending = false;
+            });
+    },
+    toggleQLearning: function () {
+      this.qLearningRunning = !this.qLearningRunning;
+
+      if (this.qLearningRunning) {
+        this.toggleQLearningButtonText = "Stop Q-learning";
+      } else {
+        this.toggleQLearningButtonText = "Start Q-learning";
+      }
+    },
+    qLearningOneStep() {
+      if (this.qLearningOneStepPending) {
+        return;
+      }
+
+      this.qLearningOneStepPending = true;
+
+      AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1 })
+            .then(response => {
+              // var newQ = response.data.newQ;
+              // var newPolicy = response.data.newPolicy;
+              // var stateValueFrom = response.data.stateValueFrom;
+              // var stateValueTo = response.data.stateValueTo;
+              // var stateTo = response.data.stateTo;
+              // var actionTo = response.data.actionTo;
+
+              // this.gridDataArray[this.currentIndex].q[this.currentAction] = newQ;
+
+              // this.gridDataArray[stateTo].policy = newPolicy;
+
+              // this.gridDataArray[this.currentIndex].stateValue = stateValueFrom;
+              // this.gridDataArray[stateTo].stateValue = stateValueTo;
+
+              // this.currentIndex = stateTo;
+              // this.currentAction = actionTo;
+
+              this.qLearningOneStepPending = false;
+            }).catch(e => {
+              console.log(e);
+
+              this.qLearningOneStepPending = false;
             });
     }
   }
