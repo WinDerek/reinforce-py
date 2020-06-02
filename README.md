@@ -1,6 +1,13 @@
 # REINFORCEpy
 
-The naming of this repository is showing respect to [REINFORCEjs](https://github.com/karpathy/reinforcejs)
+> The naming of this repository is showing respect to [REINFORCEjs](https://github.com/karpathy/reinforcejs)
+
+**REINFORCEpy** is a reinforcement learning library that implements several common RL algorithms, all with web demos. In particular, the library currently supports:
+
+- Dynamic Programming methods
+- Temporal-Difference Learning (SARSA / Q-Learning)
+- (TODO) Deep Q-Learning for Q-Learning with function approximation with Neural Networks
+- (TODO) Stochastic/Deterministic Policy Gradients and Actor Critic architectures for dealing with continuous action spaces
 
 ## Screenshots
 
