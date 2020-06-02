@@ -17,7 +17,9 @@
 
 ### Grid World: Temporal-Difference (TD) Learning
 
-<img alt="Grid World: Q-learning" src="./figure/grid_world_td_q_learning.png" width="100%" />
+<img alt="Grid World: Q-learning GIF" src="./figure/screen_record_grid_world_q_learning.gif" width="100%" />
+
+<img alt="Grid World: Q-learning" src="./figure/grid_world_q_learning.png" width="100%" />
 
 ## TODO
 
