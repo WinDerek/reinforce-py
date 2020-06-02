@@ -68,10 +68,14 @@ export default {
 <style scoped>
 .grid-world {
   font-family: "roboto";
-  box-sizing: border-box;
   width: 100%;
   height: 100%;
   margin: auto;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
 .grid-container {
@@ -80,6 +84,7 @@ export default {
   padding: 12px;
   background-color: #ffffff;
   border: 6px solid #2c3e50;
+  box-shadow: 0 3px 12px rgba(37, 34, 67, 0.9);
 
   margin: auto;
 

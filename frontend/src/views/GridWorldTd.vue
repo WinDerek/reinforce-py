@@ -383,9 +383,6 @@ export default {
 
 .control-panel-container {
   flex-grow: 0;
-
-  border-right: 1px solid #2c3e50;
-  margin-right: -1px;
 }
 
 .control-panel {
@@ -396,6 +393,8 @@ export default {
 
 .grid-world-container {
   flex-grow: 1;
+
+  background-color: #f3f1ef;
 }
 
 code {
