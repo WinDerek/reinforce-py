@@ -95,12 +95,15 @@ export default {
       this.updateHeaderPointsArray();
   },
   watch: {
-    gridData: function () {
-      // Update this.pointArray
-      this.updatePointArray();
+    'gridData.policy': {
+      handler: function () {
+        // Update this.pointArray
+        this.updatePointArray();
 
-      // Update this.headerPointsArray
-      this.updateHeaderPointsArray();
+        // Update this.headerPointsArray
+        this.updateHeaderPointsArray();
+      },
+      deep: true
     }
   },
   computed: {
