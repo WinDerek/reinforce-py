@@ -4,7 +4,7 @@ The naming of this repository is showing respect to [REINFORCEjs](https://github
 
 ## Screenshots
 
-<img alt="Grid World: Q-learning" src="./figure/grid_world_q_learning.png" width="60%" />
+<img alt="Grid World: Q-learning" src="./figure/grid_world_td_q_learning.png" width="80%" />
 
 ## TODO
 
