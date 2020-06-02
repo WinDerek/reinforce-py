@@ -131,7 +131,7 @@ export default {
         var viewModel = this;
 
         function _sarsaOneStep () {
-          AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, currentAction: viewModel.currentAction, epsilon: 0.2, alpha: 0.1 })
+          AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, currentAction: viewModel.currentAction, epsilon: 0.1, alpha: 0.1 })
             .then(response => {
               var newQ = response.data.newQ;
               var newPolicy = response.data.newPolicy;
