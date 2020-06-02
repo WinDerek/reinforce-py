@@ -387,7 +387,6 @@ export default {
 
 .control-panel {
   margin: 12px;
-
   padding: 12px;
 }
 

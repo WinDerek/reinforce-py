@@ -1,9 +1,9 @@
 <template>
   <div class="grid-world-dp">
-    <h1>Grid World: Dynamic Programming</h1>
+    <div class="control-panel-container">
+      <div class="control-panel">
+        <h1>Grid World: Dynamic Programming</h1>
 
-    <el-row>
-      <el-col :span="6" class="control-panel">
         <el-row style="padding: 12px;">
           <el-button
             @click="reset"
@@ -61,16 +61,16 @@
             v-on:change="onRewardSliderValueChanged">
           </el-slider>
         </el-row>
-      </el-col>
+      </div>
+    </div>
 
-      <el-col :span="18">
-        <GridWorld
-          :grid-data-array="gridDataArray"
-          :wall-index-array="wallIndexArray"
-          :selectedIndex="selectedIndex"
-          v-on:on-selected-index-updated="onSelectedIndexUpdated" />
-      </el-col>
-    </el-row>
+    <div class="grid-world-container">
+      <GridWorld
+        :grid-data-array="gridDataArray"
+        :wall-index-array="wallIndexArray"
+        :selectedIndex="selectedIndex"
+        v-on:on-selected-index-updated="onSelectedIndexUpdated" />
+    </div>
   </div>
 </template>
 
@@ -310,12 +310,25 @@ export default {
 
 .grid-world-dp {
   flex-grow: 1;
+
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.control-panel-container {
+  flex-grow: 0;
 }
 
 .control-panel {
+  margin: 12px;
   padding: 12px;
-  border: 2px solid #2c3e50;
-  border-radius: 4px;
+}
+
+.grid-world-container {
+  flex-grow: 1;
+
+  background-color: #f3f1ef;
 }
 
 code {

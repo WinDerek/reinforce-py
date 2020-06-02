@@ -4,7 +4,13 @@ The naming of this repository is showing respect to [REINFORCEjs](https://github
 
 ## Screenshots
 
-<img alt="Grid World: Q-learning" src="./figure/grid_world_td_q_learning.png" width="80%" />
+### Grid World: Dynamic Programming
+
+<img alt="Grid World: Q-learning" src="./figure/grid_world_dp.png" width="100%" />
+
+### Grid World: Temporal-Difference (TD) Learning
+
+<img alt="Grid World: Q-learning" src="./figure/grid_world_td_q_learning.png" width="100%" />
 
 ## TODO
 
