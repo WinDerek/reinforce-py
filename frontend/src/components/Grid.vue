@@ -33,6 +33,16 @@
           :y1="pointArray[1][1]"
           :x2="pointArray[3][0]"
           :y2="pointArray[3][1]" />
+        
+        <!-- Headers for the 4 arrows -->
+        <polyline
+          fill="none"
+          stroke="#2e3131"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          v-for="i in 4" v-bind:key="i"
+          :points="headerPointsArray[i - 1]" />
         <circle :cx="borderLength / 2.0" :cy="borderLength / 2.0" :r="arrowHeaderWidth" stroke="#ffffff" fill="#ffffff" />
         Sorry, your browser does not support inline SVG.
     </svg>
@@ -65,33 +75,37 @@ export default {
     return {
       borderLength: 100,
       arrowHeaderWidth: 6, // Do not use your intuition. This is the height of /_________, not the height of <--------. I have to admit that the naming is not so concise :( but it's clear :)
-      zeroColor: "#ececec",
+      zeroColor: "#ffffff",
       positiveColor: "#00ff00",
       negativeColor: "#ff0000",
       wallColor: "#6c7a89",
       selectedColor: "#22a7f0",
       hoverColor: "#89c4f4",
       hover: false,
-      stateValueUpperBound: 1.3
+      stateValueUpperBound: 1.3,
+      pointArray: [],
+      headerPointsArray: []
+    }
+  },
+  created: function () {
+      // Update this.pointArray
+      this.updatePointArray();
+
+      // Update this.headerPointsArray
+      this.updateHeaderPointsArray();
+  },
+  watch: {
+    gridData: function () {
+      // Update this.pointArray
+      this.updatePointArray();
+
+      // Update this.headerPointsArray
+      this.updateHeaderPointsArray();
     }
   },
   computed: {
     viewBoxStr () {
         return `0 0 ${this.borderLength} ${this.borderLength}`;
-    },
-    pointArray () {
-      var pointArr = [];
-
-      var a = (this.borderLength - this.arrowHeaderWidth * 2.0) / 2.0;
-      var centerX = this.borderLength / 2.0;
-      var centerY = this.borderLength / 2.0;
-
-      pointArr.push([centerX, centerY - this.arrowHeaderWidth - a * this.gridData.policy[0]]);
-      pointArr.push([centerY + this.arrowHeaderWidth + a * this.gridData.policy[1], centerY]);
-      pointArr.push([centerX, centerY + this.arrowHeaderWidth + a * this.gridData.policy[2]]);
-      pointArr.push([centerY - this.arrowHeaderWidth - a * this.gridData.policy[3], centerX]);
-
-      return pointArr;
     },
     backgroundColor () {
       var stateValue = this.gridData.stateValue;
@@ -172,6 +186,47 @@ export default {
 
       // Trigger the event
       this.$emit('on-grid-clicked', this.gridData.gridIndex, this.selected);
+    },
+    updatePointArray: function () {
+      var pointArr = [];
+
+      var a = (this.borderLength - this.arrowHeaderWidth * 2.0) / 2.0;
+      var centerX = this.borderLength / 2.0;
+      var centerY = this.borderLength / 2.0;
+
+      pointArr.push([centerX, centerY - this.arrowHeaderWidth - a * this.gridData.policy[0]]);
+      pointArr.push([centerY + this.arrowHeaderWidth + a * this.gridData.policy[1], centerY]);
+      pointArr.push([centerX, centerY + this.arrowHeaderWidth + a * this.gridData.policy[2]]);
+      pointArr.push([centerY - this.arrowHeaderWidth - a * this.gridData.policy[3], centerX]);
+
+      this.pointArray = pointArr;
+    },
+    updateHeaderPointsArray: function () {
+      var headerPointsArr = [];
+
+      var w = this.arrowHeaderWidth;
+
+      var point = this.pointArray[0];
+      headerPointsArr.push([
+        `${point[0] - w},${point[1] + w} ${point[0]},${point[1]} ${point[0] + w},${point[1] + w}`
+      ]);
+
+      point = this.pointArray[1];
+      headerPointsArr.push([
+        `${point[0] - w},${point[1] - w} ${point[0]},${point[1]} ${point[0] - w},${point[1] + w}`
+      ]);
+
+      point = this.pointArray[2];
+      headerPointsArr.push([
+        `${point[0] + w},${point[1] - w} ${point[0]},${point[1]} ${point[0] - w},${point[1] - w}`
+      ]);
+
+      point = this.pointArray[3];
+      headerPointsArr.push([
+        `${point[0] + w},${point[1] + w} ${point[0]},${point[1]} ${point[0] + w},${point[1] - w}`
+      ]);
+
+      this.headerPointsArray = headerPointsArr;
     }
   }
 }

@@ -22,7 +22,7 @@
 ## TODO
 
 - [ ] Make grids perfect square
-- [ ] Refine the arrows
+- [x] Refine the arrows
 - [ ] Replace HTTP with socket
 - [ ] More responsive for wide or tall screens
 - [ ] Modify page title

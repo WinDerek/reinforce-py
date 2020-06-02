@@ -82,7 +82,7 @@ export default {
   width: 65vh;
   height: 65vh;
   padding: 12px;
-  background-color: #ffffff;
+  background-color: #ececec;
   border: 6px solid #2c3e50;
   box-shadow: 0 3px 12px rgba(37, 34, 67, 0.9);
 
