@@ -1,13 +1,15 @@
-# reinforce-py
+# REINFORCEpy
 
-[reference](https://codeburst.io/full-stack-single-page-application-with-vue-js-and-flask-b1e036315532)
+The naming of this repository is showing respect to [REINFORCEjs](https://github.com/karpathy/reinforcejs)
 
-TODO:
-- [x] Grids are not perfectly square.
+## Screenshots
+
+![](./figure/grid_world_q_learning.png)
+
+## TODO
+
 - [ ] Refine the arrows.
-- [x] Adds the functionality to modify rewards.
 - [ ] More responsive for wide or tall screens.
 - [ ] Modify page title.
 - [ ] More elegant way of deep cloning using lodash.
 - [ ] Functionality to play with trained policy
-- [ ] Show iteration number

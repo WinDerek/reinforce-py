@@ -43,6 +43,10 @@
         </el-row>
 
         <el-row style="padding: 12px;">
+          Total steps: <code>{{totalSteps}}</code>
+        </el-row>
+
+        <el-row style="padding: 12px;">
           Iteration interval (0.1s ~ 1.0s)
           <el-slider
             v-model="interval"
@@ -110,7 +114,8 @@ export default {
       sarsaOneStepPending: false,
       toggleQLearningButtonText: "Start Q-learning",
       qLearningRunning: false,
-      qLearningOneStepPending: false
+      qLearningOneStepPending: false,
+      totalSteps: 0
     }
   },
   computed: {
@@ -131,8 +136,10 @@ export default {
         var viewModel = this;
 
         function _sarsaOneStep () {
-          AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, currentAction: viewModel.currentAction, epsilon: 0.1, alpha: 0.3 })
+          AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, currentAction: viewModel.currentAction, epsilon: 0.15, alpha: 0.2 })
             .then(response => {
+              viewModel.totalSteps++;
+
               var newQ = response.data.newQ;
               var newPolicy = response.data.newPolicy;
               var stateValueFrom = response.data.stateValueFrom;
@@ -170,8 +177,10 @@ export default {
         var viewModel = this;
 
         function _qLearningOneStep () {
-          AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, epsilon: 0.1, alpha: 0.1 })
+          AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, epsilon: 0.15, alpha: 0.12 })
             .then(response => {
+              viewModel.totalSteps++;
+
               var newQ = response.data.newQ;
               var newPolicy = response.data.newPolicy;
               var newStateValue = response.data.newStateValue;
@@ -288,7 +297,7 @@ export default {
 
       AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1 })
             .then(response => {
-              console.log(response.data);
+              this.totalSteps++;
 
               var newQ = response.data.newQ;
               var newPolicy = response.data.newPolicy;
@@ -332,22 +341,21 @@ export default {
 
       AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1 })
             .then(response => {
-              // var newQ = response.data.newQ;
-              // var newPolicy = response.data.newPolicy;
-              // var stateValueFrom = response.data.stateValueFrom;
-              // var stateValueTo = response.data.stateValueTo;
-              // var stateTo = response.data.stateTo;
-              // var actionTo = response.data.actionTo;
+              this.totalSteps++;
+              
+              var newQ = response.data.newQ;
+              var newPolicy = response.data.newPolicy;
+              var newStateValue = response.data.newStateValue;
+              var action = response.data.action;
+              var stateTo = response.data.stateTo;
 
-              // this.gridDataArray[this.currentIndex].q[this.currentAction] = newQ;
+              this.gridDataArray[this.currentIndex].q[action] = newQ;
 
-              // this.gridDataArray[stateTo].policy = newPolicy;
+              this.gridDataArray[this.currentIndex].policy = newPolicy;
 
-              // this.gridDataArray[this.currentIndex].stateValue = stateValueFrom;
-              // this.gridDataArray[stateTo].stateValue = stateValueTo;
+              this.gridDataArray[this.currentIndex].stateValue = newStateValue;
 
-              // this.currentIndex = stateTo;
-              // this.currentAction = actionTo;
+              this.currentIndex = stateTo;
 
               this.qLearningOneStepPending = false;
             }).catch(e => {
