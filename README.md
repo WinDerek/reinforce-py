@@ -30,6 +30,7 @@
 - [ ] Modify page title
 - [ ] More elegant way of deep cloning using lodash
 - [ ] Functionality to play with trained policy
+- [ ] RL algorithm for 2048 game
 
 ## License
 

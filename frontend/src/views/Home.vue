@@ -41,7 +41,7 @@ export default {
 
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: flex-start;
 
   padding: 12px 1.5rem;
 }
