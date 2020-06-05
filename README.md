@@ -30,6 +30,7 @@
 - [ ] Modify page title
 - [ ] More elegant way of deep cloning using lodash
 - [ ] Functionality to play with trained policy
+- [ ] Tackle the problem of being cornered by some local loop or local optimum (maybe limit the actions limit of an episode)
 - [ ] RL algorithm for 2048 game
 
 ## License
