@@ -24,6 +24,7 @@
 ## TODO
 
 - [ ] Make grids perfect square
+- [ ] Adds the documentation (instruction) for each playground
 - [x] Refine the arrows
 - [ ] Replace HTTP with socket
 - [ ] More responsive for wide or tall screens
@@ -32,6 +33,7 @@
 - [ ] Functionality to play with trained policy
 - [ ] Tackle the problem of being cornered by some local loop or local optimum (maybe limit the actions limit of an episode)
 - [ ] RL algorithm for 2048 game
+- [ ] Adds the functionality to import/export grid data in JSON format
 
 ## License
 
