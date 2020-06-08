@@ -30,10 +30,12 @@
 - [ ] More responsive for wide or tall screens
 - [ ] Modify page title
 - [ ] More elegant way of deep cloning using lodash
+- [ ] Dark/light themes
 - [ ] Functionality to play with trained policy
 - [ ] Tackle the problem of being cornered by some local loop or local optimum (maybe limit the actions limit of an episode)
 - [ ] RL algorithm for 2048 game
 - [ ] Adds the functionality to import/export grid data in JSON format
+- [ ] About the deviation probability: consider larger probability of starting from unexplored states (grids). What's the relationship between this idea and on/off-policy methods?
 
 ## License
 

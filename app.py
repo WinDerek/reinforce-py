@@ -36,11 +36,11 @@ def policy_improvement():
 def sarsa_one_step():
     request_body = request.json
 
-    return jsonify(sarsa(request_body['gridDataArray'], request_body['currentState'], request_body['currentAction'], request_body['epsilon'], request_body['alpha']))
+    return jsonify(sarsa(request_body['gridDataArray'], request_body['currentState'], request_body['currentAction'], request_body['epsilon'], request_body['alpha'], request_body['deviationProbability']))
 
 
 @app.route("/api/dynamic_programming/q_learning_one_step", methods=['GET', 'POST'])
 def q_learning_one_step():
     request_body = request.json
 
-    return jsonify(q_learning(request_body['gridDataArray'], request_body['currentState'], request_body['epsilon'], request_body['alpha']))
+    return jsonify(q_learning(request_body['gridDataArray'], request_body['currentState'], request_body['epsilon'], request_body['alpha'], request_body['deviationProbability']))

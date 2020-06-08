@@ -1,9 +1,11 @@
 import numpy as np
 import time
-from backend.random_utils import choose_randomly
+from backend.random_utils import true_with_probability, choose_randomly
+from random import randrange
 
 
 BORDER_LENGTH = 10
+N_STATES = BORDER_LENGTH * BORDER_LENGTH
 STARTING_STATE = 0
 GAMMA = 0.9
 
@@ -32,7 +34,7 @@ def actions_given_state(state):
     return action_list
 
 
-def state_transition(action, state_from, grid_data_list):
+def state_transition(action, state_from, grid_data_list, deviation_probability=0.0):
     """
     Args:
     - action: int. The index of the action. Must be legal! (Not checked here for better performance)
@@ -40,7 +42,14 @@ def state_transition(action, state_from, grid_data_list):
     """
 
     if grid_data_list[state_from]['goal']:
-        return STARTING_STATE
+        if true_with_probability(deviation_probability):
+            non_wall_grid_index_list = []
+            for grid_data in grid_data_list:
+                if not grid_data['wall'] and not grid_data['goal']:
+                    non_terminal_states_index_list.append(grid_data['gridIndex'])
+            return non_terminal_states_index_list[randrange(len(non_terminal_states_index_list))]
+        else:
+            return STARTING_STATE
 
     row = state_from // BORDER_LENGTH
     column = state_from % BORDER_LENGTH
@@ -99,10 +108,10 @@ def improve_policy(grid_data_list):
     return [grid_data['policy'] for grid_data in grid_data_list]
 
 
-def sarsa_one_step(grid_data_list, current_state, current_action, epsilon, alpha):
+def sarsa_one_step(grid_data_list, current_state, current_action, epsilon, alpha, deviation_probability=0.0):
     # State transition
     r = reward(current_action, current_state, grid_data_list)
-    state_to = state_transition(current_action, current_state, grid_data_list)
+    state_to = state_transition(current_action, current_state, grid_data_list, deviation_probability=deviation_probability)
     
     # Update the policy
     q_list = []
@@ -139,7 +148,7 @@ def sarsa_one_step(grid_data_list, current_state, current_action, epsilon, alpha
     }
 
 
-def q_learning_one_step(grid_data_list, current_state, epsilon, alpha):
+def q_learning_one_step(grid_data_list, current_state, epsilon, alpha, deviation_probability=0.0):
     # Update the policy
     q_list = []
     actions = actions_given_state(current_state)
@@ -158,7 +167,7 @@ def q_learning_one_step(grid_data_list, current_state, epsilon, alpha):
             print(grid_data_list[current_state]['policy'][action])
 
     action = choose_randomly({ action: grid_data_list[current_state]['policy'][action] for action in actions})
-    state_to = state_transition(action, current_state, grid_data_list)
+    state_to = state_transition(action, current_state, grid_data_list, deviation_probability=deviation_probability)
     r = reward(action, current_state, grid_data_list)
     old_q = grid_data_list[current_state]['q'][action]
     new_q = old_q + alpha * (r + GAMMA * max([grid_data_list[state_to]['q'][a] for a in actions_given_state(state_to)]) - old_q)

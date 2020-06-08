@@ -57,6 +57,17 @@
           </el-slider>
         </el-row>
 
+        <el-row style="padding: 12px;">
+          Deviation probability
+          <el-slider
+            v-model="deviationProbability"
+            :min="0"
+            :max="100"
+            :step="5"
+            :format-tooltip="formatDeviationProbabilityTooltip">
+          </el-slider>
+        </el-row>
+
         <el-row style="padding: 12px;" v-if="selectedIndex != -1">
           Min: <code>{{minReward.toFixed(2)}}</code>
           Max: <code>{{maxReward.toFixed(2)}}</code>
@@ -103,6 +114,7 @@ export default {
       wallIndexArray: [ 21, 22, 23, 24, 26, 27, 28, 34, 44, 54, 64, 74 ],
       initialMinusRewardIndexArray: [ 33, 45, 46, 56, 58, 68, 73, 75, 76 ],
       interval: 5,
+      deviationProbability: 0,
       selectedIndex: -1,
       rewardSliderValue: 0,
       minReward: -1.0,
@@ -136,7 +148,7 @@ export default {
         var viewModel = this;
 
         function _sarsaOneStep () {
-          AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, currentAction: viewModel.currentAction, epsilon: 0.15, alpha: 0.2 })
+          AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, currentAction: viewModel.currentAction, epsilon: 0.15, alpha: 0.2, deviationProbability: viewModel.deviationProbability / 100.0 })
             .then(response => {
               viewModel.totalSteps++;
 
@@ -177,7 +189,7 @@ export default {
         var viewModel = this;
 
         function _qLearningOneStep () {
-          AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, epsilon: 0.15, alpha: 0.12 })
+          AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, epsilon: 0.15, alpha: 0.12, deviationProbability: viewModel.deviationProbability / 100.0 })
             .then(response => {
               viewModel.totalSteps++;
 
@@ -255,6 +267,9 @@ export default {
       var seconds = value * 10 / 1000.0;
       return seconds.toFixed(1) + "s";
     },
+    formatDeviationProbabilityTooltip: function (value) {
+      return value / 100.0;
+    },
     onSelectedIndexUpdated: function (gridIndex, selected) {
       if (selected) {
         this.selectedIndex = -1;
@@ -295,7 +310,7 @@ export default {
 
       this.sarsaOneStepPending = true;
 
-      AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1 })
+      AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1, deviationProbability: viewModel.deviationProbability / 100.0 })
             .then(response => {
               this.totalSteps++;
 
@@ -339,7 +354,7 @@ export default {
 
       this.qLearningOneStepPending = true;
 
-      AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1 })
+      AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1, deviationProbability: viewModel.deviationProbability / 100.0 })
             .then(response => {
               this.totalSteps++;
               
