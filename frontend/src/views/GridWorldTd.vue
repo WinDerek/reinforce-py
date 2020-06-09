@@ -100,12 +100,11 @@
 import GridWorld from '@/components/GridWorld.vue';
 import { AXIOS } from '../util/http-common.js';
 import axios from 'axios';
-import MyMenu from '@/components/MyMenu.vue';
 
 export default {
   name: 'GridWorldTd',
   components: {
-    GridWorld, MyMenu
+    GridWorld
   },
   data: function () {
     return {
