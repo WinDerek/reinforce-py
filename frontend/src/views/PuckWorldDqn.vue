@@ -7,7 +7,7 @@
     </div>
 
     <div class="puck-world-container">
-      <PuckWorld />
+      <PuckWorld :puck-world-data="puckWorldData" />
     </div>
   </div>
 </template>
@@ -22,6 +22,19 @@ export default {
   },
   data: function () {
     return {
+      puckWorldData: {
+        puckX: 0.05,
+        puckY: 0.3,
+        puckRadius: 0.05,
+        greenTargetX: 0.7,
+        greenTargetY: 0.8,
+        greenTargetRadius: 0.015,
+        redTargetX: 0.45,
+        redTargetY: 0.55,
+        redTargetRadius: 0.015,
+        badRadius: 0.25,
+        action: 3
+      }
     }
   },
   created () {
