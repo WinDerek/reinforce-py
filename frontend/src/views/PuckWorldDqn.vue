@@ -14,11 +14,19 @@
         <el-row style="padding: 12px;">
           Tick count: <code>{{tickCount}}</code>
         </el-row>
+
+        <el-row style="padding: 12px;">
+          Experience count: <code>{{this.experience.length}}</code>
+        </el-row>
+
+        <el-row style="padding: 12px;">
+          <v-chart :options="chartOptions" />
+        </el-row>
       </div>
     </div>
 
     <div class="puck-world-container">
-      <PuckWorld :puck-world-data="puckWorldData" />
+      <puck-world :puck-world-data="puckWorldData" />
     </div>
   </div>
 </template>
@@ -27,11 +35,14 @@
 import PuckWorld from '@/components/PuckWorld.vue';
 import { AXIOS } from '../util/http-common.js';
 import axios from 'axios';
+import LineChart from '@/components/LineChart.vue';
+import ECharts from 'vue-echarts';
+import 'echarts/lib/chart/line';
 
 export default {
   name: 'PuckWorldDqn',
   components: {
-    PuckWorld
+    'puck-world': PuckWorld, 'v-chart': ECharts
   },
   data: function () {
     return {
@@ -67,16 +78,65 @@ export default {
       tdErrorClamp: 1.0,
       experience: [],
       transitionIndex: 0,
-      transitionMemoryIntervalInTicks: 25,
+      transitionMemoryIntervalInTicks: 10,
       experienceMaxSize: 3000,
       replayMaxSize: 16,
       currentTransition: [ null, null, null, null ], // [ s0, a0, r1, s1 ]
       currentTdError: null, // TODO
-      hiddenSize: 64,
+      hiddenSize: 100,
       w1: null,
       b1: null,
       w2: null,
       b2: null,
+
+      // chartData: {
+      //   labels: [],
+      //   datasets: [ {
+      //     label: "Latest TD error",
+      //     backgroundColor: "#e0828366",
+      //     borderColor: "#ff0000",
+      //     lineTension: 0.1,
+      //     borderWidth: 1,
+      //     fill: true,
+      //     pointRadius: 2,
+      //     data: [ ]
+      //   } ]
+      // },
+      chartOptions: {
+        title: {
+          text: "Latest TD Error v.s. Tick Index"
+        },
+        xAxis: {
+          type: 'value',
+          splitLine: {
+            show: false
+          }
+        },
+        tooltip: {
+          trigger: 'axis',
+          formatter: function (params) {
+            params = params[0];
+            return params.name + ': ' + params.value[1];
+          },
+          axisPointer: {
+            animation: false
+          }
+        },
+        yAxis: {
+          type: 'value',
+          boundaryGap: [0, '100%'],
+          splitLine: {
+            show: false
+          }
+        },
+        series: [{
+          name: 'latest td error',
+          type: 'line',
+          showSymbol: false,
+          hoverAnimation: false,
+          data: []
+        }],
+      },
     }
   },
   watch: {
@@ -97,28 +157,30 @@ export default {
         this.puckWorldData.redTargetX, this.puckWorldData.redTargetY ];
     },
     reward () {
-      reward = 0.0;
-
-      var badRadius = this.puckWorldData.badRadius;
+      var r = 0.0;
 
       // The closer to the green target, the better
       var dxGreen = this.puckWorldData.puckX - this.puckWorldData.greenTargetX;
       var dyGreen = this.puckWorldData.puckY - this.puckWorldData.greenTargetY;
       var distanceGreen = Math.sqrt(dxGreen * dxGreen + dyGreen * dyGreen);
-      reward += -distanceGreen;
+      r += -distanceGreen;
 
       // If the puck is in the bad area
+      var badRadius = this.puckWorldData.badRadius;
       var dxRed = this.puckWorldData.puckX - this.puckWorldData.redTargetX;
       var dyRed = this.puckWorldData.puckY - this.puckWorldData.redTargetY;
       var distanceRed = Math.sqrt(dxRed * dxRed + dyRed * dyRed);
       if (distanceRed < badRadius) {
         // The closer to the red taget, the worse
-        reward += 2 * (distanceRed - badRadius) / badRadius;
+        r += 2 * (distanceRed - badRadius) / badRadius;
       }
+
+      return r;
     },
   },
   created () {
     this.currentTransition[0] = this.state;
+    this.currentTransition[1] = Math.floor(Math.random() * 5.0);
   },
   methods: {
     toggleRunning: function () {
@@ -138,15 +200,16 @@ export default {
       if (Math.random() < this.epsilon) {
         this.puckWorldData.action = Math.floor(Math.random() * 5.0);
       } else {
-        // Compute forward
+        // // Compute forward
 
 
-        // Find the max Q index
-        var maxQIndex = -1;
-        var maxQ = 0.0;
+        // // Find the max Q index
+        // var maxQIndex = -1;
+        // var maxQ = 0.0;
         
 
-        this.puckWorldData.action = maxQIndex;
+        // this.puckWorldData.action = maxQIndex;
+        this.puckWorldData.action = this.currentTransition[1];
       }
 
       // Update the data in puck world and UI will be updated automatically
@@ -159,9 +222,9 @@ export default {
       }
 
       // Update the transition
-      var firstTick = false;
+      var firstTick = true;
       if (this.currentTransition[2] != null) {
-        firstTick = true;
+        firstTick = false;
         this.currentTransition[0] = this.currentTransition[3];
       }
       this.currentTransition[1] = this.puckWorldData.action;
@@ -190,13 +253,26 @@ export default {
       if (!firstTick) {
         weights = { w1: viewModel.w1, b1: viewModel.b1, w2: viewModel.w2, b2: viewModel.b2 };
       }
-      AXIOS.post("/puckworld/learn_from_transitions", { weights: weights, hideenSize: viewModel.hideenSize, transitions: transitions, clamp: viewModel.tdErrorClamp, gamma: viewModel.gamma })
+      // console.log(weights);
+      AXIOS.post("/puckworld/learn_from_transitions", { weights: weights, hiddenSize: viewModel.hiddenSize, transitions: transitions, clamp: viewModel.tdErrorClamp, gamma: viewModel.gamma })
       .then(response => {
-        var weights = response.data;
+        var weights = response.data.weights;
         viewModel.w1 = weights.w1;
         viewModel.b1 = weights.b1;
         viewModel.w2 = weights.w2;
         viewModel.b2 = weights.b2;
+
+        // Update the action
+        viewModel.currentTransition[1] = response.data.a1;
+
+        // Display the latest TD error
+        // viewModel.chartData.datasets[0].data.push(response.data.latestTdError);
+        // viewModel.chartData.labels.push(viewModel.chartData.datasets[0].data.length);
+        viewModel.chartOptions.series[0].data.push({
+          name: this.tickCount,
+          value: [ this.tickCount, response.data.latestTdError ]
+        });
+        // console.log(viewModel.chartData);
 
         // Loop
         if (!this.running) {
@@ -212,9 +288,15 @@ export default {
     sampleTransitions: function () {
       var transitions = [ this.currentTransition ];
       for (var i = 0; i < this.replayMaxSize; i++) {
+        // Stop sampling if there is no experience at all
+        if (this.experience.length == 0) {
+          break;
+        }
+
         var index = this.randomInt(0, this.experience.length);
         transitions.push(this.experience[index]);
       }
+      return transitions;
     },
     randomInt: function(a, b) {
       return Math.floor(Math.random() * (b - a) + a);
@@ -300,5 +382,10 @@ code {
   flex-grow: 1;
 
   background-color: #f3f1ef;
+}
+
+.echarts {
+  width: 90%;
+  height: 200px;
 }
 </style>

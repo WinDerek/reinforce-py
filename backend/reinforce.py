@@ -187,34 +187,38 @@ def q_learning_one_step(grid_data_list, current_state, epsilon, alpha, deviation
 
 def learn_from_transitions(weights, hidden_size, transitions, clamp, gamma):
     if weights is not None:
-        w1 = weights['w1']
-        b1 = weights['b1']
-        w2 = weights['w2']
-        b2 = weights['b2']
+        w1 = np.array(weights['w1'])
+        b1 = np.array(weights['b1'])
+        w2 = np.array(weights['w2'])
+        b2 = np.array(weights['b2'])
         net = TwoLayerNet(8, hidden_size, 5, w1=w1, b1=b1, w2=w2, b2=b2)
     else:
         net = TwoLayerNet(8, hidden_size, 5)
 
+    # print("transitions count: {:d}".format(len(transitions)))
+    # print(transitions)
+    latest_td_error = None
     for transition in transitions:
-        s0 = transition[0]
-        a0 = transition[1]
+        s0 = np.array([transition[0]])
+        a0 = int(transition[1])
         r1 = transition[2]
-        s1 = transition[3]
+        s1 = np.array([transition[3]])
 
-        oracle = r1 + gamma * max(net.forward(s1))
+        # print("Before training:")
+        # print(net.forward(s1, requires_grad=False)[0])
+        oracle = r1 + gamma * max(net.forward(s1, requires_grad=False)[0])
 
-        predicted = net.forward(s0)
+        td_error = net.forward(s0, requires_grad=True, oracle=oracle, a0=a0, clamp=clamp)
 
-        td_error = predicted[a0] - oracle
+        if latest_td_error is None:
+            latest_td_error = td_error
 
-        # Clamp the TD error
-        if td_error > clamp:
-            td_error = clamp
-        elif td_error < -clamp:
-            td_error = -clamp
-        
-        net.backward(np.array(s0), td_error, a0)
+        updated_weights = net.backward()
+    
+    # print("After training:")
+    # print(net.forward(s1, requires_grad=False)[0])
 
-    return {
-        weights
-    }
+    a1 = int(np.argmax(net.forward(s1, requires_grad=False)[0]))
+    print(a1)
+
+    return { 'weights': updated_weights, 'a1': a1, 'latestTdError': latest_td_error }

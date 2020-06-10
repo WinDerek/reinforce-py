@@ -83,3 +83,15 @@ module.exports = {
 ## 6. Disable the error unexpected console statement for production build
 
 [reference](https://stackoverflow.com/a/34215651/6086852)
+
+## ~~7. Chart.js~~
+
+```shell
+$ npm install vue-chartjs chart.js --save
+```
+
+## 7. ECharts
+
+```shell
+$ npm install echarts vue-echarts
+```
