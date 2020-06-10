@@ -4,10 +4,10 @@
 
 **REINFORCEpy** is a reinforcement learning library that implements several common RL algorithms, all with web demos. In particular, the library currently supports:
 
-- Dynamic Programming methods
-- Temporal-Difference Learning (SARSA / Q-Learning)
-- Deep Q-Learning for Q-Learning with function approximation with Neural Networks
-- (TODO) Stochastic/Deterministic Policy Gradients and Actor Critic architectures for dealing with continuous action spaces
+- Dynamic programming methods
+- Temporal-Difference learning (SARSA / Q-learning)
+- Deep Q-learning for Q-learning with function approximation using neural networks
+- (TODO) Stochastic / Deterministic Policy Gradients and Actor Critic architectures for dealing with continuous action spaces
 
 ## Screenshots
 
@@ -20,6 +20,10 @@
 <img alt="Grid World: Q-learning GIF" src="./figure/screen_record_grid_world_q_learning.gif" width="100%" />
 
 <img alt="Grid World: Q-learning" src="./figure/grid_world_q_learning.png" width="100%" />
+
+### Puck World: DQN (Deep Q-learning)
+
+<img alt="Grid World: DQN" src="./figure/puck_world_dqn.png" width="100%" />
 
 ## TODO
 
