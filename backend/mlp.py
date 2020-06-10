@@ -66,7 +66,7 @@ class TwoLayerNet(object):
 
 
     # TODO: learning rate decay logic
-    def backward(self, learning_rate=1e-2, learning_rate_decay=0.95):
+    def backward(self, learning_rate=1e-3, learning_rate_decay=0.95):
         self.params['w2'] += - learning_rate * self.grads['w2']
         self.params['b2'] += - learning_rate * self.grads['b2']
         self.params['w1'] += - learning_rate * self.grads['w1']

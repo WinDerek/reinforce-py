@@ -59,7 +59,7 @@ export default {
         badRadius: 0.25,
         action: 3
       },
-      puckAcceleration: 0.002,
+      puckAcceleration: 0.005,
       puckVelocityX: 0.0,
       puckVelocityY: 0.0,
       puckDampingFactor: 0.95,
@@ -70,15 +70,15 @@ export default {
 
       running: false,
       toggleRunningButtonText: "Start DQN",
-      tickInterval: 20,
+      tickInterval: 10,
       tickCount: 0,
       greenTargetResetIntervalInTicks: 100,
-      epsilon: 0.1, // For $\epsilon$-greedy
+      epsilon: 0.2, // For $\epsilon$-greedy
       gamma: 0.9, // The discount factor
       tdErrorClamp: 1.0,
       experience: [],
       transitionIndex: 0,
-      transitionMemoryIntervalInTicks: 10,
+      transitionMemoryIntervalInTicks: 4,
       experienceMaxSize: 3000,
       replayMaxSize: 16,
       currentTransition: [ null, null, null, null ], // [ s0, a0, r1, s1 ]
@@ -149,37 +149,9 @@ export default {
     },
   },
   computed: {
-    state () {
-      return [
-        this.puckWorldData.puckX, this.puckWorldData.puckY,
-        this.puckVelocityX, this.puckVelocityY,
-        this.puckWorldData.greenTargetX, this.puckWorldData.greenTargetY,
-        this.puckWorldData.redTargetX, this.puckWorldData.redTargetY ];
-    },
-    reward () {
-      var r = 0.0;
-
-      // The closer to the green target, the better
-      var dxGreen = this.puckWorldData.puckX - this.puckWorldData.greenTargetX;
-      var dyGreen = this.puckWorldData.puckY - this.puckWorldData.greenTargetY;
-      var distanceGreen = Math.sqrt(dxGreen * dxGreen + dyGreen * dyGreen);
-      r += -distanceGreen;
-
-      // If the puck is in the bad area
-      var badRadius = this.puckWorldData.badRadius;
-      var dxRed = this.puckWorldData.puckX - this.puckWorldData.redTargetX;
-      var dyRed = this.puckWorldData.puckY - this.puckWorldData.redTargetY;
-      var distanceRed = Math.sqrt(dxRed * dxRed + dyRed * dyRed);
-      if (distanceRed < badRadius) {
-        // The closer to the red taget, the worse
-        r += 2 * (distanceRed - badRadius) / badRadius;
-      }
-
-      return r;
-    },
   },
   created () {
-    this.currentTransition[0] = this.state;
+    this.currentTransition[0] = this.state();
     this.currentTransition[1] = Math.floor(Math.random() * 5.0);
   },
   methods: {
@@ -197,47 +169,57 @@ export default {
       this.tickCount += 1;
 
       // Take action
-      if (Math.random() < this.epsilon) {
-        this.puckWorldData.action = Math.floor(Math.random() * 5.0);
-      } else {
-        // // Compute forward
+      // if (Math.random() < this.epsilon) {
+      //   this.puckWorldData.action = Math.floor(Math.random() * 5.0);
+      //   this.currentTransition[1] = this.puckWorldData.action;
+      // } else {
+      //   // // Compute forward
 
 
-        // // Find the max Q index
-        // var maxQIndex = -1;
-        // var maxQ = 0.0;
+      //   // // Find the max Q index
+      //   // var maxQIndex = -1;
+      //   // var maxQ = 0.0;
         
 
-        // this.puckWorldData.action = maxQIndex;
-        this.puckWorldData.action = this.currentTransition[1];
-      }
+      //   // this.puckWorldData.action = maxQIndex;
+      //   this.puckWorldData.action = this.currentTransition[1];
+      // }
+      // Already done on POST response
 
       // Update the data in puck world and UI will be updated automatically
       this.updatePuckWorldData();
 
-      // Reset the position of the green target if necessary
-      if (this.tickCount % this.greenTargetResetIntervalInTicks === 0) {
-        this.puckWorldData.greenTargetX = Math.random();
-        this.puckWorldData.greenTargetY = Math.random();
-      }
-
       // Update the transition
       var firstTick = true;
-      if (this.currentTransition[2] != null) {
+      if (this.currentTransition[3] != null) {
         firstTick = false;
         this.currentTransition[0] = this.currentTransition[3];
       }
       this.currentTransition[1] = this.puckWorldData.action;
-      this.currentTransition[2] = this.reward;
-      this.currentTransition[3] = this.state;
+      this.currentTransition[2] = this.reward();
+      // var state = this.state;
+      // console.log("Got u state!");
+      // console.log(state);
+      this.currentTransition[3] = this.state();
+
+      // // todo
+      // console.log(this.currentTransition);
+      // console.log(this.currentTransition[3]);
+      // console.log(this.state());
 
       // Store the transition in the experience if necessary
       if (this.tickCount % this.transitionMemoryIntervalInTicks == 0) {
+        // Deep copy the current transition, or you will only playing the reference to this.currentTransition!
+        var transitionCopy = JSON.parse(JSON.stringify(this.currentTransition));
+        // console.log(this.transitionIndex);
+        // console.log(this.currentTransition);
         if (this.transitionIndex + 1 > this.experience.length) {
-          this.experience.push(this.currentTransition);
+          this.experience.push(transitionCopy);
         } else {
-          this.experience[this.transitionIndex] = this.currentTransition;
+          this.experience[this.transitionIndex] = transitionCopy;
         }
+        // console.log(this.experience);
+        // console.log(this.experience[this.experience.length - 1]);
 
         // Increment the transition index
         this.transitionIndex += 1;
@@ -263,19 +245,24 @@ export default {
         viewModel.b2 = weights.b2;
 
         // Update the action
-        viewModel.currentTransition[1] = response.data.a1;
+        if (Math.random() < viewModel.epsilon) {
+          viewModel.puckWorldData.action = response.data.a1;
+        } else {
+          viewModel.puckWorldData.action = Math.floor(Math.random() * 5.0);
+        }
+        // viewModel.currentTransition[1] = viewModel.puckWorldData.action;
 
         // Display the latest TD error
         // viewModel.chartData.datasets[0].data.push(response.data.latestTdError);
         // viewModel.chartData.labels.push(viewModel.chartData.datasets[0].data.length);
         viewModel.chartOptions.series[0].data.push({
-          name: this.tickCount,
-          value: [ this.tickCount, response.data.latestTdError ]
+          name: viewModel.tickCount,
+          value: [ viewModel.tickCount, response.data.latestTdError ]
         });
         // console.log(viewModel.chartData);
 
         // Loop
-        if (!this.running) {
+        if (!viewModel.running) {
           return;
         }
         setTimeout(function () { viewModel.tick() }, viewModel.tickInterval);
@@ -294,6 +281,8 @@ export default {
         }
 
         var index = this.randomInt(0, this.experience.length);
+        // console.log(index);
+        // console.log(this.experience[index]);
         transitions.push(this.experience[index]);
       }
       return transitions;
@@ -347,6 +336,42 @@ export default {
       // Update the position of the red target
       this.puckWorldData.redTargetX += this.redTargetVelocityX;
       this.puckWorldData.redTargetY += this.redTargetVelocityY;
+
+      // Reset the position of the green target if necessary
+      if (this.tickCount % this.greenTargetResetIntervalInTicks === 0) {
+        this.puckWorldData.greenTargetX = Math.random();
+        this.puckWorldData.greenTargetY = Math.random();
+      }
+    },
+
+    state: function () {
+      return [
+        this.puckWorldData.puckX, this.puckWorldData.puckY,
+        this.puckVelocityX, this.puckVelocityY,
+        this.puckWorldData.greenTargetX, this.puckWorldData.greenTargetY,
+        this.puckWorldData.redTargetX, this.puckWorldData.redTargetY ];
+    },
+
+    reward: function () {
+      var r = 0.0;
+
+      // The closer to the green target, the better
+      var dxGreen = this.puckWorldData.puckX - this.puckWorldData.greenTargetX;
+      var dyGreen = this.puckWorldData.puckY - this.puckWorldData.greenTargetY;
+      var distanceGreen = Math.sqrt(dxGreen * dxGreen + dyGreen * dyGreen);
+      r += -distanceGreen;
+
+      // If the puck is in the bad area
+      var badRadius = this.puckWorldData.badRadius;
+      var dxRed = this.puckWorldData.puckX - this.puckWorldData.redTargetX;
+      var dyRed = this.puckWorldData.puckY - this.puckWorldData.redTargetY;
+      var distanceRed = Math.sqrt(dxRed * dxRed + dyRed * dyRed);
+      if (distanceRed < badRadius) {
+        // The closer to the red taget, the worse
+        r += 2 * (distanceRed - badRadius) / badRadius;
+      }
+
+      return r;
     },
   },
 };

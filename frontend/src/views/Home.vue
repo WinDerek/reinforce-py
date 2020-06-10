@@ -7,7 +7,7 @@
       <ul>
         <li>Dynamic Programming methods</li>
         <li>Temporal-Difference Learning (SARSA / Q-Learning)</li>
-        <li>(TODO) Deep Q-Learning for Q-Learning with function approximation with Neural Networks</li>
+        <li>Deep Q-Learning for Q-Learning with function approximation with Neural Networks</li>
         <li>(TODO) Stochastic/Deterministic Policy Gradients and Actor Critic architectures for dealing with continuous action spaces</li>
       </ul>
     </div>
