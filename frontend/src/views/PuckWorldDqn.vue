@@ -25,6 +25,8 @@
 
 <script>
 import PuckWorld from '@/components/PuckWorld.vue';
+import { AXIOS } from '../util/http-common.js';
+import axios from 'axios';
 
 export default {
   name: 'PuckWorldDqn',
@@ -60,6 +62,21 @@ export default {
       tickInterval: 20,
       tickCount: 0,
       greenTargetResetIntervalInTicks: 100,
+      epsilon: 0.1, // For $\epsilon$-greedy
+      gamma: 0.9, // The discount factor
+      tdErrorClamp: 1.0,
+      experience: [],
+      transitionIndex: 0,
+      transitionMemoryIntervalInTicks: 25,
+      experienceMaxSize: 3000,
+      replayMaxSize: 16,
+      currentTransition: [ null, null, null, null ], // [ s0, a0, r1, s1 ]
+      currentTdError: null, // TODO
+      hiddenSize: 64,
+      w1: null,
+      b1: null,
+      w2: null,
+      b2: null,
     }
   },
   watch: {
@@ -72,8 +89,36 @@ export default {
     },
   },
   computed: {
+    state () {
+      return [
+        this.puckWorldData.puckX, this.puckWorldData.puckY,
+        this.puckVelocityX, this.puckVelocityY,
+        this.puckWorldData.greenTargetX, this.puckWorldData.greenTargetY,
+        this.puckWorldData.redTargetX, this.puckWorldData.redTargetY ];
+    },
+    reward () {
+      reward = 0.0;
+
+      var badRadius = this.puckWorldData.badRadius;
+
+      // The closer to the green target, the better
+      var dxGreen = this.puckWorldData.puckX - this.puckWorldData.greenTargetX;
+      var dyGreen = this.puckWorldData.puckY - this.puckWorldData.greenTargetY;
+      var distanceGreen = Math.sqrt(dxGreen * dxGreen + dyGreen * dyGreen);
+      reward += -distanceGreen;
+
+      // If the puck is in the bad area
+      var dxRed = this.puckWorldData.puckX - this.puckWorldData.redTargetX;
+      var dyRed = this.puckWorldData.puckY - this.puckWorldData.redTargetY;
+      var distanceRed = Math.sqrt(dxRed * dxRed + dyRed * dyRed);
+      if (distanceRed < badRadius) {
+        // The closer to the red taget, the worse
+        reward += 2 * (distanceRed - badRadius) / badRadius;
+      }
+    },
   },
   created () {
+    this.currentTransition[0] = this.state;
   },
   methods: {
     toggleRunning: function () {
@@ -89,6 +134,92 @@ export default {
       // Increment the tick count by one
       this.tickCount += 1;
 
+      // Take action
+      if (Math.random() < this.epsilon) {
+        this.puckWorldData.action = Math.floor(Math.random() * 5.0);
+      } else {
+        // Compute forward
+
+
+        // Find the max Q index
+        var maxQIndex = -1;
+        var maxQ = 0.0;
+        
+
+        this.puckWorldData.action = maxQIndex;
+      }
+
+      // Update the data in puck world and UI will be updated automatically
+      this.updatePuckWorldData();
+
+      // Reset the position of the green target if necessary
+      if (this.tickCount % this.greenTargetResetIntervalInTicks === 0) {
+        this.puckWorldData.greenTargetX = Math.random();
+        this.puckWorldData.greenTargetY = Math.random();
+      }
+
+      // Update the transition
+      var firstTick = false;
+      if (this.currentTransition[2] != null) {
+        firstTick = true;
+        this.currentTransition[0] = this.currentTransition[3];
+      }
+      this.currentTransition[1] = this.puckWorldData.action;
+      this.currentTransition[2] = this.reward;
+      this.currentTransition[3] = this.state;
+
+      // Store the transition in the experience if necessary
+      if (this.tickCount % this.transitionMemoryIntervalInTicks == 0) {
+        if (this.transitionIndex + 1 > this.experience.length) {
+          this.experience.push(this.currentTransition);
+        } else {
+          this.experience[this.transitionIndex] = this.currentTransition;
+        }
+
+        // Increment the transition index
+        this.transitionIndex += 1;
+        if (this.transitionIndex >= this.experienceMaxSize) {
+          this.transitionIndex = 0;
+        }
+      }
+
+      // Experience replay
+      var transitions = this.sampleTransitions();
+      var viewModel = this;
+      var weights = null;
+      if (!firstTick) {
+        weights = { w1: viewModel.w1, b1: viewModel.b1, w2: viewModel.w2, b2: viewModel.b2 };
+      }
+      AXIOS.post("/puckworld/learn_from_transitions", { weights: weights, hideenSize: viewModel.hideenSize, transitions: transitions, clamp: viewModel.tdErrorClamp, gamma: viewModel.gamma })
+      .then(response => {
+        var weights = response.data;
+        viewModel.w1 = weights.w1;
+        viewModel.b1 = weights.b1;
+        viewModel.w2 = weights.w2;
+        viewModel.b2 = weights.b2;
+
+        // Loop
+        if (!this.running) {
+          return;
+        }
+        setTimeout(function () { viewModel.tick() }, viewModel.tickInterval);
+      })
+      .catch(e => {
+        console.log(e);
+        // TODO: stop the button and make alerts
+      });
+    },
+    sampleTransitions: function () {
+      var transitions = [ this.currentTransition ];
+      for (var i = 0; i < this.replayMaxSize; i++) {
+        var index = this.randomInt(0, this.experience.length);
+        transitions.push(this.experience[index]);
+      }
+    },
+    randomInt: function(a, b) {
+      return Math.floor(Math.random() * (b - a) + a);
+    },
+    updatePuckWorldData: function () {
       // Update the velocity of the puck
       // Damping
       this.puckVelocityX *= this.puckDampingFactor;
@@ -134,19 +265,6 @@ export default {
       // Update the position of the red target
       this.puckWorldData.redTargetX += this.redTargetVelocityX;
       this.puckWorldData.redTargetY += this.redTargetVelocityY;
-
-      // Reset the position of the green target if necessary
-      if (this.tickCount % this.greenTargetResetIntervalInTicks === 0) {
-        this.puckWorldData.greenTargetX = Math.random();
-        this.puckWorldData.greenTargetY = Math.random();
-      }
-
-      if (!this.running) {
-        return;
-      }
-
-      var viewModel = this;
-      setTimeout(function () { viewModel.tick() }, viewModel.tickInterval);
     },
   },
 };

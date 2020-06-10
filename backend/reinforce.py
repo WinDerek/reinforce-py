@@ -2,6 +2,7 @@ import numpy as np
 import time
 from backend.random_utils import true_with_probability, choose_randomly
 from random import randrange
+from backend.mlp import TwoLayerNet
 
 
 BORDER_LENGTH = 10
@@ -181,4 +182,39 @@ def q_learning_one_step(grid_data_list, current_state, epsilon, alpha, deviation
         'newStateValue': newStateValue,\
         'action': action,\
         'stateTo': state_to
+    }
+
+
+def learn_from_transitions(weights, hidden_size, transitions, clamp, gamma):
+    if weights is not None:
+        w1 = weights['w1']
+        b1 = weights['b1']
+        w2 = weights['w2']
+        b2 = weights['b2']
+        net = TwoLayerNet(8, hidden_size, 5, w1=w1, b1=b1, w2=w2, b2=b2)
+    else:
+        net = TwoLayerNet(8, hidden_size, 5)
+
+    for transition in transitions:
+        s0 = transition[0]
+        a0 = transition[1]
+        r1 = transition[2]
+        s1 = transition[3]
+
+        oracle = r1 + gamma * max(net.forward(s1))
+
+        predicted = net.forward(s0)
+
+        td_error = predicted[a0] - oracle
+
+        # Clamp the TD error
+        if td_error > clamp:
+            td_error = clamp
+        elif td_error < -clamp:
+            td_error = -clamp
+        
+        net.backward(np.array(s0), td_error, a0)
+
+    return {
+        weights
     }

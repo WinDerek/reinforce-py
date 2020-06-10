@@ -2,7 +2,12 @@ from flask import Flask, render_template
 from flask_cors import CORS
 from flask import request
 from flask import jsonify
-from backend.reinforce import evaluate_policy_by_one_sweep, improve_policy, sarsa_one_step as sarsa, q_learning_one_step as q_learning
+from backend.reinforce import evaluate_policy_by_one_sweep,\
+    improve_policy,\
+    sarsa_one_step as sarsa,\
+    q_learning_one_step as q_learning,\
+    learn_from_transitions as l_transitions
+
 
 app = Flask(__name__)
 CORS(app)
@@ -44,3 +49,10 @@ def q_learning_one_step():
     request_body = request.json
 
     return jsonify(q_learning(request_body['gridDataArray'], request_body['currentState'], request_body['epsilon'], request_body['alpha'], request_body['deviationProbability']))
+
+
+@app.route("/api/puckworld/learn_from_transitions", methods=['GET', 'POST'])
+def learn_from_transitions():
+    request_body = request.json
+
+    return jsonify(l_transitions(request_body['weights'], request_body['hiddenSize'], request_body['transitions'], request_body['clamp'], request_body['gamma']))
