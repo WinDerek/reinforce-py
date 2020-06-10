@@ -89,19 +89,7 @@ export default {
       w2: null,
       b2: null,
 
-      // chartData: {
-      //   labels: [],
-      //   datasets: [ {
-      //     label: "Latest TD error",
-      //     backgroundColor: "#e0828366",
-      //     borderColor: "#ff0000",
-      //     lineTension: 0.1,
-      //     borderWidth: 1,
-      //     fill: true,
-      //     pointRadius: 2,
-      //     data: [ ]
-      //   } ]
-      // },
+      maxChartTickLength: 80,
       chartOptions: {
         title: {
           text: "Latest TD Error v.s. Tick Index"
@@ -197,29 +185,17 @@ export default {
       }
       this.currentTransition[1] = this.puckWorldData.action;
       this.currentTransition[2] = this.reward();
-      // var state = this.state;
-      // console.log("Got u state!");
-      // console.log(state);
       this.currentTransition[3] = this.state();
-
-      // // todo
-      // console.log(this.currentTransition);
-      // console.log(this.currentTransition[3]);
-      // console.log(this.state());
 
       // Store the transition in the experience if necessary
       if (this.tickCount % this.transitionMemoryIntervalInTicks == 0) {
         // Deep copy the current transition, or you will only playing the reference to this.currentTransition!
         var transitionCopy = JSON.parse(JSON.stringify(this.currentTransition));
-        // console.log(this.transitionIndex);
-        // console.log(this.currentTransition);
         if (this.transitionIndex + 1 > this.experience.length) {
           this.experience.push(transitionCopy);
         } else {
           this.experience[this.transitionIndex] = transitionCopy;
         }
-        // console.log(this.experience);
-        // console.log(this.experience[this.experience.length - 1]);
 
         // Increment the transition index
         this.transitionIndex += 1;
@@ -235,7 +211,6 @@ export default {
       if (!firstTick) {
         weights = { w1: viewModel.w1, b1: viewModel.b1, w2: viewModel.w2, b2: viewModel.b2 };
       }
-      // console.log(weights);
       AXIOS.post("/puckworld/learn_from_transitions", { weights: weights, hiddenSize: viewModel.hiddenSize, transitions: transitions, clamp: viewModel.tdErrorClamp, gamma: viewModel.gamma })
       .then(response => {
         var weights = response.data.weights;
@@ -253,13 +228,13 @@ export default {
         // viewModel.currentTransition[1] = viewModel.puckWorldData.action;
 
         // Display the latest TD error
-        // viewModel.chartData.datasets[0].data.push(response.data.latestTdError);
-        // viewModel.chartData.labels.push(viewModel.chartData.datasets[0].data.length);
+        if (viewModel.chartOptions.series[0].data.length >= viewModel.maxChartTickLength) {
+          viewModel.chartOptions.series[0].data.shift();
+        }
         viewModel.chartOptions.series[0].data.push({
           name: viewModel.tickCount,
           value: [ viewModel.tickCount, response.data.latestTdError ]
         });
-        // console.log(viewModel.chartData);
 
         // Loop
         if (!viewModel.running) {
