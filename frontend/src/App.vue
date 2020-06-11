@@ -1,7 +1,10 @@
 <template>
   <div id="app">
     <my-menu></my-menu>
-    <router-view/>
+
+    <transition name="fade" mode="out-in">
+      <router-view/>
+    </transition>
   </div>
 </template>
 
@@ -55,5 +58,17 @@ p {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition-duration: 0.06s;
+  transition-property: opacity;
+  transition-timing-function: ease;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0
 }
 </style>

@@ -199,7 +199,7 @@ def learn_from_transitions(weights, hidden_size, transitions, clamp, gamma):
     # print(transitions)
     latest_td_error = None
     for transition in transitions:
-        print(transition)
+        # print(transition)
         s0 = np.array([transition[0]])
         a0 = int(transition[1])
         r1 = transition[2]
@@ -220,6 +220,6 @@ def learn_from_transitions(weights, hidden_size, transitions, clamp, gamma):
     # print(net.forward(s1, requires_grad=False)[0])
 
     a1 = int(np.argmax(net.forward(s1, requires_grad=False)[0]))
-    print(a1)
+    # print(a1)
 
     return { 'weights': updated_weights, 'a1': a1, 'latestTdError': latest_td_error }

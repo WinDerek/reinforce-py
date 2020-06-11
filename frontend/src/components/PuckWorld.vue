@@ -92,8 +92,8 @@ export default {
 }
 
 .container {
-  width: 80vh;
-  height: 80vh;
+  width: min(80vw, 80vh);
+  height: min(80vw, 80vh);
   padding: 12px;
   background-color: #ececec;
   border: 6px solid #2c3e50;

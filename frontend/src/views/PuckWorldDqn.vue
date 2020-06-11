@@ -89,7 +89,7 @@ export default {
       w2: null,
       b2: null,
 
-      maxChartTickLength: 80,
+      maxChartTickLength: 500,
       chartOptions: {
         title: {
           text: "Latest TD Error v.s. Tick Index"
@@ -98,7 +98,9 @@ export default {
           type: 'value',
           splitLine: {
             show: false
-          }
+          },
+          min: 1,
+          max: 1
         },
         tooltip: {
           trigger: 'axis',
@@ -232,9 +234,11 @@ export default {
           viewModel.chartOptions.series[0].data.shift();
         }
         viewModel.chartOptions.series[0].data.push({
-          name: viewModel.tickCount,
+          name: viewModel.tickCount + "",
           value: [ viewModel.tickCount, response.data.latestTdError ]
         });
+        viewModel.chartOptions.xAxis.min = viewModel.chartOptions.series[0].data[0].value[0];
+        viewModel.chartOptions.xAxis.max = viewModel.tickCount;
 
         // Loop
         if (!viewModel.running) {

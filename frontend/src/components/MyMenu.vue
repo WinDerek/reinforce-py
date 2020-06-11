@@ -6,19 +6,19 @@
         style="position: absolute;top: 50%;transform: translateY(-50%);">REINFORCEpy</div>
     </div>
 
-    <router-link to="/water_world/dqn" class="menu-item right white link-label">
+    <router-link to="/water_world/dqn" class="menu-item right white link-label" :class="{ selected: selectedIndex === 4 }" v-on:click.native="selectedIndex = 4">
       <div class="link-text">Water World: DQN</div>
     </router-link>
-    <router-link to="/puck_world/dqn" class="menu-item right white link-label">
+    <router-link to="/puck_world/dqn" class="menu-item right white link-label" :class="{ selected: selectedIndex === 3 }" v-on:click.native="selectedIndex = 3">
       <div class="link-text">Puck World: DQN</div>
     </router-link>
-    <router-link to="/grid_world/td" class="menu-item right white link-label">
+    <router-link to="/grid_world/td" class="menu-item right white link-label" :class="{ selected: selectedIndex === 2 }" v-on:click.native="selectedIndex = 2">
       <div class="link-text">Grid World: TD</div>
     </router-link>
-    <router-link to="/grid_world/dp" class="menu-item right white link-label">
+    <router-link to="/grid_world/dp" class="menu-item right white link-label" :class="{ selected: selectedIndex === 1 }" v-on:click.native="selectedIndex = 1">
       <div class="link-text">Grid World: DP</div>
     </router-link>
-    <router-link to="/home" class="menu-item right white link-label">
+    <router-link to="/home" class="menu-item right white link-label" :class="{ selected: selectedIndex === 0 }" v-on:click.native="selectedIndex = 0">
       <div class="link-text">Home</div>
     </router-link>
   </div>
@@ -27,7 +27,13 @@
 <script>
 export default {
   name: 'MyMenu',
-  props: {},
+  props: {
+    selectedIndex: {
+      type: Number,
+      required: false,
+      default: 0
+    },
+  },
   data: function () {
     return {}
   },
@@ -84,7 +90,11 @@ export default {
   padding: 6px 10px;
 }
 
-.link-label:hover {
+.link-text:hover {
+  background-color: #2574a9;
+}
+
+.selected {
   border: 1px solid #ffffff;
   background-color: #2574a9;
   transition: border-color 0.1s;
