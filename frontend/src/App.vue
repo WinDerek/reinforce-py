@@ -40,7 +40,7 @@ h1 {
   font-family: "roboto";
   font-size: 2.0rem;
   text-align: center;
-  text-shadow: 0 1px 1px #000;
+  text-shadow: 0 3px 2px #aaa;
   color: #6c7a89;
 }
 
