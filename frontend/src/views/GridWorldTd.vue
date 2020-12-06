@@ -99,7 +99,7 @@
 // @ is an alias to /src
 import GridWorld from '@/components/GridWorld.vue';
 import { AXIOS } from '../util/http-common.js';
-import axios from 'axios';
+// import axios from 'axios';
 
 export default {
   name: 'GridWorldTd',
@@ -309,6 +309,8 @@ export default {
 
       this.sarsaOneStepPending = true;
 
+      let viewModel = this;
+
       AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1, deviationProbability: viewModel.deviationProbability / 100.0 })
             .then(response => {
               this.totalSteps++;
@@ -352,6 +354,8 @@ export default {
       }
 
       this.qLearningOneStepPending = true;
+
+      let viewModel = this;
 
       AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1, deviationProbability: viewModel.deviationProbability / 100.0 })
             .then(response => {

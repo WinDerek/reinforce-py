@@ -1,1 +1,3 @@
-npm run serve -- --port 45678
+#!/bin/bash
+
+npm run serve -- --port 41551
