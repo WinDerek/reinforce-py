@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <my-menu></my-menu>
+    <my-menu v-model="menuSelectedIndex" v-on:selectedIndexChange="onMenuSelectedIndexChange"></my-menu>
 
     <transition name="fade" mode="out-in">
       <router-view/>
@@ -18,9 +18,15 @@ export default {
   },
   data: function () {
     return {
+      menuSelectedIndex: 0
     }
   },
   created () {
+  },
+  methods: {
+    onMenuSelectedIndexChange(index) {
+      this.menuSelectedIndex = index;
+    }
   }
 };
 </script>
