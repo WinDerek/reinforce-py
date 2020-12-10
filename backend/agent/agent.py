@@ -18,6 +18,15 @@ The Agent class represents the agent in reinforcement learning.
 
 
 class Agent:
-    def __init__(self, name="Agent", discount=0.9):
+    def __init__(self, name="Agent", discount=0.9, env=None):
         self.name = name
         self.discount = discount
+        self.env = env
+    
+
+    def reset(self):
+        self.current_step = 0
+
+
+    def take_action(self):
+        raise NotImplementedError

@@ -165,3 +165,6 @@ dmypy.json
 
 # The log files
 log/
+
+# Dumped pickle files
+*.pkl

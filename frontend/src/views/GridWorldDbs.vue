@@ -144,7 +144,7 @@ export default {
       handler: function () {
         var viewModel = this;
 
-        function _sarsaOneStep () {
+        function _dbsValueIterationOneStep () {
           AXIOS.post("/dynamic_programming/dbs-value-iteration-one-step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, currentAction: viewModel.currentAction, epsilon: 0.15, alpha: 0.2, deviationProbability: viewModel.deviationProbability / 100.0 })
             .then(response => {
               viewModel.totalSteps++;
@@ -262,12 +262,12 @@ export default {
         this.toggleSarsaButtonText = "Start sarsa";
       }
     },
-    sarsaOneStep() {
-      if (this.sarsaOneStepPending) {
+    dbsValueIterationOneStep() {
+      if (this.dbsValueIterationOneStepPending) {
         return;
       }
 
-      this.sarsaOneStepPending = true;
+      this.dbsValueIterationOneStepPending = true;
 
       let viewModel = this;
 
@@ -299,49 +299,6 @@ export default {
               this.sarsaOneStepPending = false;
             });
     },
-    toggleQLearning: function () {
-      this.qLearningRunning = !this.qLearningRunning;
-
-      if (this.qLearningRunning) {
-        this.toggleQLearningButtonText = "Stop Q-learning";
-      } else {
-        this.toggleQLearningButtonText = "Start Q-learning";
-      }
-    },
-    qLearningOneStep() {
-      if (this.qLearningOneStepPending) {
-        return;
-      }
-
-      this.qLearningOneStepPending = true;
-
-      let viewModel = this;
-
-      AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: this.gridDataArray, currentState: this.currentIndex, currentAction: this.currentAction, epsilon: 0.2, alpha: 0.1, deviationProbability: viewModel.deviationProbability / 100.0 })
-            .then(response => {
-              this.totalSteps++;
-              
-              var newQ = response.data.newQ;
-              var newPolicy = response.data.newPolicy;
-              var newStateValue = response.data.newStateValue;
-              var action = response.data.action;
-              var stateTo = response.data.stateTo;
-
-              this.gridDataArray[this.currentIndex].q[action] = newQ;
-
-              this.gridDataArray[this.currentIndex].policy = newPolicy;
-
-              this.gridDataArray[this.currentIndex].stateValue = newStateValue;
-
-              this.currentIndex = stateTo;
-
-              this.qLearningOneStepPending = false;
-            }).catch(e => {
-              console.log(e);
-
-              this.qLearningOneStepPending = false;
-            });
-    }
   }
 };
 </script>

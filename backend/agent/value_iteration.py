@@ -17,16 +17,72 @@ Agents using the value iteration algorithm.
 """
 
 
+import math
+
+from .agent import Agent
+
+
 class GviAgent(Agent):
     """Generialized value iteration.
     """
 
 
-    def __init__(self, name="GviAgent", operator, **kwds):
-        super().__init__(name, **kwds)
+    def __init__(self, name="GviAgent", **kwds):
+        super().__init__(name=name, **kwds)
 
-        self.operator = operator
+        self.reset()
+    
+
+    def reset(self):
+        self.q = [ [ 0.0, 0.0, 0.0, 0.0 ] for state in self.env.state_space ]
+        self.v = [ 0.0 for state in self.env.state_space ]
+
+        super().reset()
 
 
-def DbsValueIterationAgent():
-    return GviAgent(name="DbsValueIterationAgent", operator=)
+    def take_action(self):
+        for state_index, state in enumerate(self.env.state_space):
+            # Update q(s, a) for all a
+            for action_index, action in enumerate(self.env.actions_given_state(state)):
+                state_to = self.env.state_transition(action, state)
+                # print(state_to)
+                state_to_index = self.env.state_space.index(state_to)
+                self.q[state_index][action_index] = self.env.reward(state, action) + self.discount * self.v[state_to_index]
+
+            # Update v(s)
+            self.v[state_index] = self.operator(self.q[state_index])
+        
+        # Increment the current step
+        self.current_step += 1
+    
+
+    def operator(self, q_list):
+        raise NotImplementedError
+
+
+class ValueIterationAgent(GviAgent):
+    def __init__(self, name="ValueIterationAgent", **kwds):
+        super().__init__(name=name, **kwds)
+    
+
+    def operator(self, q_list):
+        return max(q_list)
+
+
+class DbsValueIterationAgent(GviAgent):
+    def __init__(self, beta_function, name="DbsValueIterationAgent", **kwds):
+        super().__init__(name=name, **kwds)
+
+        self.beta_function = beta_function
+
+    
+    def operator(self, q_list):
+        def boltzmann_softmax(x_list, beta):
+            numerator = sum([ math.exp(beta * x) * x for x in x_list ])
+            denominator = sum([ math.exp(beta * x) for x in x_list ])
+
+            return numerator / denominator
+
+        beta = self.beta_function(self.current_step)
+        
+        return boltzmann_softmax(q_list, beta)

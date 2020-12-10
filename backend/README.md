@@ -10,4 +10,5 @@ $ pip install scipy
 $ pip install matplotlib
 $ pip install Flask==1.1.2
 $ pip install -U flask-cors
+$ pip install jupyterlab
 ```

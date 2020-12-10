@@ -15,4 +15,4 @@
 
 
 from .agent import Agent
-from .value_iteration import GviAgent, DbsValueIterationAgent
+from .value_iteration import GviAgent, ValueIterationAgent, DbsValueIterationAgent

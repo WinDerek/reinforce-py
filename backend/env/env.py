@@ -15,17 +15,19 @@
 """
 The Env class represents the environment in reinforcement learning.
 
-The API design is mainly inspired by the Env class in OpenAI Gym: https://github.com/openai/gym/blob/master/gym/core.py
+The API design is partly inspired by the Env class from `OpenAI Gym <https://github.com/openai/gym/blob/master/gym/core.py>`_
 """
 
 
 class Env:
-    def __init__(self, name="Env", episode_max_length=300):
+    def __init__(self, name="Env", state_space=None, action_space=None, episode_max_length=300):
         self.name = name
+        self.state_space = state_space
+        self.action_space = action_space
         self.episode_max_length = episode_max_length
 
 
-class GridWorldEnv:
+class GridWorldEnv(Env):
     """Grid World, the famous toy environment in reinforcement learning.
 
     Specification:
@@ -35,30 +37,56 @@ class GridWorldEnv:
 
     def __init__(
         self,
-        name="GridWorldEnv",
         size,
         starting_index,
         goal_index,
         goal_reward,
         wall_index_list,
+        name="GridWorldEnv",
         **kwds):
-        super().__init__(self, name=name, **kwds)
+        super().__init__(name=name, **kwds)
 
+        self.size = size
         self.starting_index = starting_index
         self.goal_index = goal_index
         self.goal_reward = goal_reward
         self.wall_index_list = wall_index_list
     
 
+    def print_info(self):
+        print("size: ", self.size)
+        print("starting_index: ", self.starting_index)
+        print("goal_index: ", self.goal_index)
+        print("goal_reward: ", self.goal_reward)
+        print("wall_index_list: ", self.wall_index_list)
+        print("name: ", self.name)
+        print("state_space: ", self.state_space)
+        print("action_space: ", self.action_space)
+    
+
     def step(action):
         # TODO
+        observation = None
+
+        reward = None
+
+        done = False
 
         info = None
 
         return observation, reward, done, info
     
 
-    def __actions_given_state(self, state):
+    def reward(self, state, action):
+        state_to = self.state_transition(action, state)
+
+        if state_to == self.goal_index:
+            return self.goal_reward
+        else:
+            return 0.0
+    
+
+    def actions_given_state(self, state):
         """
         Returns: a list of int. The elements of the list represent the indices of all the legal actions given the state.
         
@@ -84,7 +112,7 @@ class GridWorldEnv:
         return action_list
 
 
-    def __state_transition(self, action, state_from):
+    def state_transition(self, action, state_from):
         """
         Args:
         - action: int. The index of the action. Must be legal! (Not checked here for better performance.)
