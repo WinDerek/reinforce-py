@@ -47,11 +47,11 @@ GOAL_REWARD = 1.0
 
 
 def infinity_norm(x_list):
-    return max([ math.abs(x) for x in x_list ])
+    return max([ abs(x) for x in x_list ])
 
 
 def value_loss(v_list, optimal_v_list):
-    return infinity_norm([ math.abs(v - optimal_v) for v, optimal_v in zip(v_list, optimal_v_list) ])
+    return infinity_norm([ abs(v - optimal_v) for v, optimal_v in zip(v_list, optimal_v_list) ])
 
 
 # Create the GridWorld Environment
@@ -85,7 +85,7 @@ agent = DbsValueIterationAgent(discount=DISCOUNT, env=copy.deepcopy(grid_world_e
 
 
 # Start value iteration
-value_loss_array = np.array(EPISODE_MAX_LENGTH * EPISODE_NUM, dtype=float)
+value_loss_array = np.zeros(EPISODE_MAX_LENGTH * EPISODE_NUM, dtype=float)
 for episode_index in range(EPISODE_NUM):
     for step_index in range(EPISODE_MAX_LENGTH):
         agent.take_action()
