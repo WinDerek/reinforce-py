@@ -121,12 +121,9 @@ export default {
       maxReward: 1.0,
       currentIndex: 0,
       currentAction: 1,
-      toggleSarsaButtonText: "Start sarsa",
-      sarsaRunning: false,
-      sarsaOneStepPending: false,
-      toggleQLearningButtonText: "Start Q-learning",
-      qLearningRunning: false,
-      qLearningOneStepPending: false,
+      toggleSarsaButtonText: "start DBS value iteration",
+      dbsValueIterationRunning: false,
+      dbsValueIterationOneStepPending: false,
       totalSteps: 0
     }
   },
@@ -143,12 +140,12 @@ export default {
     }
   },
   watch: {
-    sarsaRunning: {
+    dbsValueIterationRunning: {
       handler: function () {
         var viewModel = this;
 
         function _sarsaOneStep () {
-          AXIOS.post("/dynamic_programming/sarsa_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, currentAction: viewModel.currentAction, epsilon: 0.15, alpha: 0.2, deviationProbability: viewModel.deviationProbability / 100.0 })
+          AXIOS.post("/dynamic_programming/dbs-value-iteration-one-step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, currentAction: viewModel.currentAction, epsilon: 0.15, alpha: 0.2, deviationProbability: viewModel.deviationProbability / 100.0 })
             .then(response => {
               viewModel.totalSteps++;
 
@@ -169,59 +166,21 @@ export default {
               viewModel.currentIndex = stateTo;
               viewModel.currentAction = actionTo;
 
-              if (!viewModel.sarsaRunning) {
+              if (!viewModel.dbsValueIterationRunning) {
                 return;
               }
 
-              setTimeout(function () { _sarsaOneStep() }, viewModel.iterationIntervalInMillis);
+              setTimeout(function () { _dbsValueIterationOneStep() }, viewModel.iterationIntervalInMillis);
             }).catch(e => {
               console.log(e);
             });
         }
 
-        if (viewModel.sarsaRunning) {
-          _sarsaOneStep();
+        if (viewModel.dbsValueIterationRunning) {
+          _dbsValueIterationOneStep();
         }
       }
     },
-    qLearningRunning: {
-      handler: function () {
-        var viewModel = this;
-
-        function _qLearningOneStep () {
-          AXIOS.post("/dynamic_programming/q_learning_one_step", { gridDataArray: viewModel.gridDataArray, currentState: viewModel.currentIndex, epsilon: 0.15, alpha: 0.12, deviationProbability: viewModel.deviationProbability / 100.0 })
-            .then(response => {
-              viewModel.totalSteps++;
-
-              var newQ = response.data.newQ;
-              var newPolicy = response.data.newPolicy;
-              var newStateValue = response.data.newStateValue;
-              var action = response.data.action;
-              var stateTo = response.data.stateTo;
-
-              viewModel.gridDataArray[viewModel.currentIndex].q[action] = newQ;
-
-              viewModel.gridDataArray[viewModel.currentIndex].policy = newPolicy;
-
-              viewModel.gridDataArray[viewModel.currentIndex].stateValue = newStateValue;
-
-              viewModel.currentIndex = stateTo;
-
-              if (!viewModel.qLearningRunning) {
-                return;
-              }
-
-              setTimeout(function () { _qLearningOneStep() }, viewModel.iterationIntervalInMillis);
-            }).catch(e => {
-              console.log(e);
-            });
-        }
-
-        if (viewModel.qLearningRunning) {
-          _qLearningOneStep();
-        }
-      }
-    }
   },
   created () {
     for (var i = 0; i < 10; i++) {
@@ -258,7 +217,7 @@ export default {
     this.initialGridDataArray[this.goalIndex].goal = true;
 
     // Set the initial -1 reward
-    this.initialMinusRewardIndexArray.forEach(index => this.initialGridDataArray[index].reward = -1.0)
+    this.initialMinusRewardIndexArray.forEach(index => this.initialGridDataArray[index].reward = -1.0);
 
     this.gridDataArray = JSON.parse(JSON.stringify(this.initialGridDataArray));
   },
