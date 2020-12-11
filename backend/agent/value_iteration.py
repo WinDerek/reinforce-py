@@ -45,14 +45,25 @@ class GviAgent(Agent):
     def take_action(self):
         for state_index, state in enumerate(self.env.state_space):
             # Update q(s, a) for all a
-            for action_index, action in enumerate(self.env.actions_given_state(state)):
+            # for action_index, action in enumerate(self.env.state_space): # TODO: Check this difference with that in the pseudocode
+            for action in self.env.actions_given_state(state):
                 state_to = self.env.state_transition(action, state)
-                # print(state_to)
                 state_to_index = self.env.state_space.index(state_to)
+                action_index = self.env.action_space.index(action)
                 self.q_2darray[state_index][action_index] = self.env.reward(state, action) + self.discount * self.v_array[state_to_index]
+                # # TODO: Debugging...
+                # print("action = {:d}, (from, to) = ({:d}, {:d})".format(action, state, state_to))
+                # print("update q(s, a) = q({:d}, {:d}) = {:.4f} + {:.4f} * {:.4f} = {:.4f}".format(state, action, self.env.reward(state, action), self.discount, self.v_array[state_to_index], self.q_2darray[state_index][action_index]))
 
             # Update v(s)
-            self.v_array[state_index] = self.operator(self.q_2darray[state_index])
+            # self.v_array[state_index] = self.operator(self.q_2darray[state_index]) # TODO: Check this difference with that in the pseudocode
+            self.v_array[state_index] = self.operator(self.q_2darray[state_index][self.env.actions_given_state(state)])
+
+            # TODO: Debugging...
+            # print(self.q_2darray[state_index])
+            # print("s = ", state, ", actions = ", self.env.actions_given_state(state))
+            # print("q(s, .) = ", self.q_2darray[state_index][self.env.actions_given_state(state)])
+            # print("v(s) = operator(q(s, .)) = ", self.v_array[state_index])
         
         # Increment the current step
         self.current_step += 1

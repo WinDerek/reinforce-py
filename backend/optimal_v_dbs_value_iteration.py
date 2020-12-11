@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Calculates the optimal v list for the DBS value iteration experiments.
+"""Calculates the optimal v for the DBS value iteration experiments.
 """
 
 
@@ -25,8 +25,12 @@ import numpy as np
 
 from env import GridWorldEnv
 from agent import ValueIterationAgent
-from dbs_experiments_config import VALUE_ITERATION_SETTINGS as config
-from dbs_experiments_config import GRID_WORLD
+from dbs.config import VALUE_ITERATION_CONFIG as config
+from dbs.config import GRID_WORLD
+from util import format_time
+
+
+total_begin_time = time.time()
 
 
 # Create the GridWorld Environment
@@ -63,3 +67,7 @@ filename = "dbs_value_iteration_optimal_v_array.pkl"
 with open(filename, "wb") as f:
     pickle.dump(optimal_v_array, f)
     print("optimal_v_array has been successfully dumped to file \'{:s}\'.".format(filename))
+
+
+total_end_time = time.time()
+print("The optimal v for DBS value iteration experiments calculated in {:s}.".format(format_time(total_end_time - total_begin_time)))

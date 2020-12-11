@@ -17,11 +17,12 @@
 
 
 # The Grid World settings
+wall_index_list = [ 1, 7, 11, 17, 21, 27, 31, 37, 41, 47, 51, 57, 61, 67, 81, 87, 88, 91, 97 ]
 GRID_WORLD = {
     'row_count': 10,
     'column_count': 10,
-    'wall_index_list': [ 1, 7, 11, 17, 21, 27, 31, 37, 41, 47, 51, 57, 61, 67, 81, 87, 88, 91, 97 ],
-    'state_space': [ grid_index for grid_index in range(10 * 10) ], # The state is the grid index and state 0 is at the top left corner
+    'wall_index_list': wall_index_list,
+    'state_space': [ grid_index for grid_index in range(10 * 10) if grid_index not in wall_index_list ], # The state is the grid index and state 0 is at the top left corner
     'action_space': [ 0, 1, 2, 3 ], # 0 for UP, 1 for RIGHT, 2 for DOWN, and 3 for LEFT
     'starting_index': 0,
     'goal_index': 98,
@@ -34,7 +35,7 @@ VALUE_ITERATION_CONFIG = {
     'discount': 0.9,
     'episode_num': 500,
     'episode_max_length': 300,
-    'optimal_step_num': 100# * 10000
+    'optimal_step_num': 100 * 10000
 }
 
 

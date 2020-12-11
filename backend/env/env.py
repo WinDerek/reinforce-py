@@ -94,6 +94,10 @@ class GridWorldEnv(Env):
         - state: int. The index of the state.
         """
 
+        # If the state is the terminal state (goal)
+        if state == self.goal_index:
+            return [ 0, 1, 2, 3 ]
+
         row_count = self.size[0]
         column_count = self.size[1]
         row_index = state // column_count
@@ -123,6 +127,11 @@ class GridWorldEnv(Env):
         # # If the current state is the goal state
         # if state_from == self.goal_index:
         #     return self.starting_index
+
+        # If the current state is the terminal state (goal)
+        if state_from == self.goal_index:
+            # Go to the starting point
+            return self.starting_index
         
         column_count = self.size[1]
         row_index = state_from // column_count
