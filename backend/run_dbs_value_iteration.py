@@ -38,6 +38,19 @@ def value_loss(v_list, optimal_v_list):
     return infinity_norm([ abs(v - optimal_v) for v, optimal_v in zip(v_list, optimal_v_list) ])
 
 
+def run_agent(agent):
+    # Start value iteration
+    value_loss_array = np.zeros(config['episode_max_length'] * config['episode_num'], dtype=float)
+    for episode_index in range(config['episode_num']):
+        for step_index in range(config['episode_max_length']):
+            agent.take_action()
+
+            step_index = config['episode_max_length'] * episode_index + step_index
+            value_loss_array[step_index] = value_loss(agent.v_array, optimal_v_array)
+    
+    return value_loss_array
+
+
 # Load the optimal v
 filename = "dbs_value_iteration_optimal_v_array.pkl"
 with open(filename, "rb") as f:
@@ -58,25 +71,39 @@ grid_world_env = GridWorldEnv(
 print(grid_world_env.print_info())
 
 
-# Create the DBS value iteration agent
-agent = DbsValueIterationAgent(discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 0.1)
+# Create the DBS value iteration agents
+agent_list = []
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 0.1$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 0.1))
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 1$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 1))
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 10$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 10))
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 100$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 100))
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 1000$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 1000))
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: t))
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t^2$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: math.pow(t, 2)))
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t^3$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: math.pow(t, 3)))
 
 
-# Start value iteration
-value_loss_array = np.zeros(config['episode_max_length'] * config['episode_num'], dtype=float)
-for episode_index in range(config['episode_num']):
-    for step_index in range(config['episode_max_length']):
-        agent.take_action()
+# Run the agents one by one
+value_loss_2darray = np.zeros((len(agent_list), config['episode_max_length'] * config['episode_num']), dtype=float)
+for agent_index, agent in enumerate(agent_list):
+    begin_time = time.time()
 
-        step_index = config['episode_max_length'] * episode_index + step_index
-        value_loss_array[step_index] = value_loss(agent.v_array, optimal_v_array)
+    value_loss_array = run_agent(agent)
+    value_loss_2darray[agent_index] = value_loss_array
+
+    end_time = time.time()
+    print("Agent {:s} finished in {:s}.".format(agent.name, format_time(end_time - begin_time)))
 
 
-# Dump the value loss array
-filename = "dbs_value_iteration_value_loss_array.pkl"
+# Dump the experiments result
+experiments_results = {
+    'value_loss_2darray': value_loss_2darray,
+    'agent_name_list': [ agent.name for agent in agent_list ]
+}
+filename = "dbs_value_iteration_experiments_results.pkl"
 with open(filename, "wb") as f:
-    pickle.dump(value_loss_array, f)
-    print("value_loss_array has been successfully dumped to file \'{:s}\'.".format(filename))
+    pickle.dump(experiments_results, f)
+    print("experiments_results has been successfully dumped to file \'{:s}\'.".format(filename))
 
 
 total_end_time = time.time()

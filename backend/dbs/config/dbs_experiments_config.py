@@ -33,7 +33,7 @@ GRID_WORLD = {
 # DBS value iteration settings
 VALUE_ITERATION_CONFIG = {
     'discount': 0.9,
-    'episode_num': 500,
+    'episode_num': 10, #500,
     'episode_max_length': 300,
     'optimal_step_num': 100 * 10000
 }

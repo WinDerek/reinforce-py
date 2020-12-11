@@ -91,8 +91,10 @@ class DbsValueIterationAgent(GviAgent):
     
     def operator(self, q_array):
         def boltzmann_softmax(x_list, beta):
-            numerator = sum([ math.exp(beta * x) * x for x in x_list ])
-            denominator = sum([ math.exp(beta * x) for x in x_list ])
+            # TODO: Clip beta
+
+            numerator = sum([ np.exp(beta * x) * x for x in x_list ])
+            denominator = sum([ np.exp(beta * x) for x in x_list ])
 
             return numerator / denominator
 
