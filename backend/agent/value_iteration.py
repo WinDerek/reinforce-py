@@ -19,6 +19,8 @@ Agents using the value iteration algorithm.
 
 import math
 
+import numpy as np
+
 from .agent import Agent
 
 
@@ -34,8 +36,8 @@ class GviAgent(Agent):
     
 
     def reset(self):
-        self.q = [ [ 0.0, 0.0, 0.0, 0.0 ] for state in self.env.state_space ]
-        self.v = [ 0.0 for state in self.env.state_space ]
+        self.q_2darray = np.zeros((len(self.env.state_space), 4), dtype=float)
+        self.v_array = np.zeros(len(self.env.state_space), dtype=float)
 
         super().reset()
 
@@ -47,16 +49,16 @@ class GviAgent(Agent):
                 state_to = self.env.state_transition(action, state)
                 # print(state_to)
                 state_to_index = self.env.state_space.index(state_to)
-                self.q[state_index][action_index] = self.env.reward(state, action) + self.discount * self.v[state_to_index]
+                self.q_2darray[state_index][action_index] = self.env.reward(state, action) + self.discount * self.v_array[state_to_index]
 
             # Update v(s)
-            self.v[state_index] = self.operator(self.q[state_index])
+            self.v_array[state_index] = self.operator(self.q_2darray[state_index])
         
         # Increment the current step
         self.current_step += 1
     
 
-    def operator(self, q_list):
+    def operator(self, q_array):
         raise NotImplementedError
 
 
@@ -65,8 +67,8 @@ class ValueIterationAgent(GviAgent):
         super().__init__(name=name, **kwds)
     
 
-    def operator(self, q_list):
-        return max(q_list)
+    def operator(self, q_array):
+        return max(q_array)
 
 
 class DbsValueIterationAgent(GviAgent):
@@ -76,7 +78,7 @@ class DbsValueIterationAgent(GviAgent):
         self.beta_function = beta_function
 
     
-    def operator(self, q_list):
+    def operator(self, q_array):
         def boltzmann_softmax(x_list, beta):
             numerator = sum([ math.exp(beta * x) * x for x in x_list ])
             denominator = sum([ math.exp(beta * x) for x in x_list ])
@@ -85,4 +87,4 @@ class DbsValueIterationAgent(GviAgent):
 
         beta = self.beta_function(self.current_step)
         
-        return boltzmann_softmax(q_list, beta)
+        return boltzmann_softmax(q_array, beta)
