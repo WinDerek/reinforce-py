@@ -47,7 +47,7 @@ grid_world_env = GridWorldEnv(
 
 
 # Create the value iteration agent
-value_iteration_agent = ValueIterationAgent(discount=config['discount'], env=grid_world_env)
+value_iteration_agent = ValueIterationAgent(discount=config['discount'], env=grid_world_env, in_place=True)
 
 
 # Calculate the optimal v list

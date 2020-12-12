@@ -18,6 +18,7 @@ Agents using the value iteration algorithm.
 
 
 import math
+import copy
 
 import numpy as np
 
@@ -29,28 +30,46 @@ class GviAgent(Agent):
     """
 
 
-    def __init__(self, name="GviAgent", **kwds):
+    def __init__(self, name="GviAgent", in_place=False, random_initialization=False, **kwds):
         super().__init__(name=name, **kwds)
+
+        self.in_place = in_place
+        self.random_initialization = random_initialization
 
         self.reset()
     
 
     def reset(self):
-        self.q_2darray = np.zeros((len(self.env.state_space), 4), dtype=float)
-        self.v_array = np.zeros(len(self.env.state_space), dtype=float)
+        # If random initialization
+        if self.random_initialization:
+            self.q_2darray = np.random.rand(len(self.env.state_space), 4)
+            self.v_array = np.random.rand(len(self.env.state_space))
+            self.v_array[self.env.state_space.index(self.env.goal_index)] = 0.0 # v(terminal) = 0
+        # Else, all zero initialization
+        else:
+            self.q_2darray = np.zeros((len(self.env.state_space), 4), dtype=float)
+            self.v_array = np.zeros(len(self.env.state_space), dtype=float)
 
         super().reset()
 
 
     def take_action(self):
         for state_index, state in enumerate(self.env.state_space):
+            old_v_array = copy.deepcopy(self.v_array)
+
             # Update q(s, a) for all a
             # for action_index, action in enumerate(self.env.state_space): # TODO: Check this difference with that in the pseudocode
             for action in self.env.actions_given_state(state):
                 state_to = self.env.state_transition(action, state)
                 state_to_index = self.env.state_space.index(state_to)
                 action_index = self.env.action_space.index(action)
-                self.q_2darray[state_index][action_index] = self.env.reward(state, action) + self.discount * self.v_array[state_to_index]
+                
+                # If the in-place update mechanism is used
+                if self.in_place:
+                    self.q_2darray[state_index][action_index] = self.env.reward(state, action) + self.discount * self.v_array[state_to_index]
+                else:
+                    self.q_2darray[state_index][action_index] = self.env.reward(state, action) + self.discount * old_v_array[state_to_index]
+
                 # # TODO: Debugging...
                 # print("action = {:d}, (from, to) = ({:d}, {:d})".format(action, state, state_to))
                 # print("update q(s, a) = q({:d}, {:d}) = {:.4f} + {:.4f} * {:.4f} = {:.4f}".format(state, action, self.env.reward(state, action), self.discount, self.v_array[state_to_index], self.q_2darray[state_index][action_index]))
