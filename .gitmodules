@@ -1,0 +1,3 @@
+[submodule "backend/open_env"]
+	path = backend/open_env
+	url = git@github.com:neo-derek/open-env.git

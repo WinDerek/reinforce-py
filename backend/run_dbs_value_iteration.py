@@ -24,8 +24,8 @@ import pickle
 
 import numpy as np
 
-from env import GridWorldEnv
-from agent import ValueIterationAgent, DbsValueIterationAgent
+from openenv.env import GridWorldEnv
+from openenv.agent import ValueIterationAgent, DbsValueIterationAgent
 from util import infinity_norm, format_time
 from dbs.config import VALUE_ITERATION_CONFIG as config
 from dbs.config import GRID_WORLD
