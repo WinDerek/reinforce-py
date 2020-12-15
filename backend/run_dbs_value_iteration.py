@@ -26,7 +26,8 @@ import numpy as np
 
 from openenv.env import GridWorldEnv
 from openenv.agent import ValueIterationAgent, DbsValueIterationAgent
-from util import infinity_norm, format_time
+from openenv.util.math_utils import infinity_norm
+from openenv.util.time_utils import format_time
 from dbs.config import VALUE_ITERATION_CONFIG as config
 from dbs.config import GRID_WORLD
 
