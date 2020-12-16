@@ -25,19 +25,17 @@ import pickle
 import numpy as np
 
 from openenv.env import GridWorldEnv
-from openenv.agent import ValueIterationAgent, DbsValueIterationAgent
 from openenv.util.math_utils import infinity_norm
 from openenv.util.time_utils import format_time
+
+from reinforcepy.agent import ValueIterationAgent, DbsValueIterationAgent
 from dbs.config import VALUE_ITERATION_CONFIG as config
 from dbs.config import GRID_WORLD
 
-
 total_begin_time = time.time()
-
 
 def value_loss(v_list, optimal_v_list):
     return infinity_norm([ abs(v - optimal_v) for v, optimal_v in zip(v_list, optimal_v_list) ])
-
 
 def run_agent(agent):
     # Start value iteration
@@ -51,12 +49,10 @@ def run_agent(agent):
     
     return value_loss_array
 
-
 # Load the optimal v
 filename = "dbs_value_iteration_optimal_v_array.pkl"
 with open(filename, "rb") as f:
     optimal_v_array = pickle.load(f)
-
 
 # Create the GridWorld Environment
 grid_world_env = GridWorldEnv(
@@ -71,7 +67,6 @@ grid_world_env = GridWorldEnv(
     wall_index_list=GRID_WORLD['wall_index_list'])
 print(grid_world_env.print_info())
 
-
 # Create the DBS value iteration agents
 agent_list = []
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 0.1$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 0.1, in_place=False))
@@ -82,7 +77,6 @@ agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 1000$", discount=conf
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: t, in_place=False))
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t^2$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: math.pow(t, 2), in_place=False))
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t^3$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: math.pow(t, 3), in_place=False))
-
 
 # Run the agents one by one
 value_loss_2darray = np.zeros((len(agent_list), config['episode_max_length'] * config['episode_num']), dtype=float)
@@ -95,7 +89,6 @@ for agent_index, agent in enumerate(agent_list):
     end_time = time.time()
     print("Agent {:s} finished in {:s}.".format(agent.name, format_time(end_time - begin_time)))
 
-
 # Dump the experiments result
 experiments_results = {
     'value_loss_2darray': value_loss_2darray,
@@ -105,7 +98,6 @@ filename = "dbs_value_iteration_experiments_results.pkl"
 with open(filename, "wb") as f:
     pickle.dump(experiments_results, f)
     print("experiments_results has been successfully dumped to file \'{:s}\'.".format(filename))
-
 
 total_end_time = time.time()
 print("DBS value iteration experiments conducted in {:s}.".format(format_time(total_end_time - total_begin_time)))
