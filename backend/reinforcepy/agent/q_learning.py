@@ -16,6 +16,8 @@
 Agents using the Q-learning algorithm.
 """
 
+import numpy as np
+
 from .agent import Agent
 from reinforcepy.util.random_utils import sample_from_distribution
 
@@ -35,12 +37,22 @@ class QLearningAgent(Agent):
         self.q_2darray = np.zeros((len(self.env.state_space), len(self.env.action_space)), dtype=float) # The q(s, a) can be retrieved by calling self.q_2darray[state_index][action_index]
         self.policy_2darray = np.zeros((len(self.env.state_space), len(self.env.action_space)), dtype=float) # The policy \pi(a|s) can be retrieved by calling self.policy_2darray[state_index][action_index]
     
+    def new_episode(self):
+        self.current_step = 0
+        self.current_state = self.env.starting_index
+
+        # Align the environment state
+        self.env.current_state = self.current_state
+    
     def take_action(self):
         # Get the index of the current state in the state space
         current_state_index = self.env.state_space.index(self.current_state)
 
+        # Get the actions given state, i.e., A(s)
+        actions = self.env.actions_given_state(self.current_state)
+
         # Update the policy for the current state from q(current_state, .)
-        self.__update_policy(current_state_index)
+        self.__update_policy(current_state_index, actions)
 
         # Sample the action from the latest policy
         sampled_action = sample_from_distribution({ action: self.policy_2darray[current_state_index][self.env.action_space.index(action)] for action in actions})
@@ -53,7 +65,7 @@ class QLearningAgent(Agent):
 
         # Update the q value
         old_q = self.q_2darray[current_state_index][sampled_action_index]
-        new_q = old_q + self.alpha * (reward + self.discount * max([ self.q_2darray[state_to_index][self.env.action_space.index(a)] for a in actions_given_state(state_to) ]) - old_q)
+        new_q = old_q + self.alpha * (reward + self.discount * max([ self.q_2darray[state_to_index][self.env.action_space.index(a)] for a in self.env.actions_given_state(state_to) ]) - old_q)
         self.q_2darray[current_state_index][sampled_action_index] = new_q
 
         # # Calculate the two new state values
@@ -61,13 +73,15 @@ class QLearningAgent(Agent):
 
         # Move on to the next state
         self.current_state = state_to
+        
+        # Increment the current step
+        self.current_step += 1
 
         return done
     
-    def __update_policy(self, current_state_index):
+    def __update_policy(self, current_state_index, actions):
         # Get the optimal q value
         q_list = []
-        actions = self.env.actions_given_state(current_state)
         for action in actions:
             action_index = self.env.action_space.index(action)
             q_list.append(self.q_2darray[current_state_index][action_index])

@@ -24,7 +24,7 @@ def true_with_probability(prob):
     return random.random() < prob
 
 
-def sample_from_distibution(distribution):
+def sample_from_distribution(distribution):
     """Samples a choice according to the probability distribution of the choices. Only for discrete cases.
 
     0.0------|--rand----|----|----1.0

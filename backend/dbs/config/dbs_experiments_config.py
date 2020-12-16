@@ -15,7 +15,6 @@
 """The configurations of the DBS experiments.
 """
 
-
 # The Grid World settings
 wall_index_list = [ 1, 7, 11, 17, 21, 27, 31, 37, 41, 47, 51, 57, 61, 67, 81, 87, 88, 91, 97 ]
 GRID_WORLD = {
@@ -29,7 +28,6 @@ GRID_WORLD = {
     'goal_reward': 1.0
 }
 
-
 # DBS value iteration settings
 VALUE_ITERATION_CONFIG = {
     'discount': 0.9,
@@ -38,10 +36,12 @@ VALUE_ITERATION_CONFIG = {
     'optimal_step_num': 100 * 10000
 }
 
-
 # DBS Q-learning settings
-# TODO
-
+Q_LEARNING_CONFIG = {
+    'discount': 0.9,
+    'episode_num': 500,
+    'episode_max_length': 300
+}
 
 # DBS DQN settings
 # TODO

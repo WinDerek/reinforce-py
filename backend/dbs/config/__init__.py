@@ -14,4 +14,4 @@
 # limitations under the License.
 
 
-from .dbs_experiments_config import GRID_WORLD, VALUE_ITERATION_CONFIG
+from .dbs_experiments_config import GRID_WORLD, VALUE_ITERATION_CONFIG, Q_LEARNING_CONFIG

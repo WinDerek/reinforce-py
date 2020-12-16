@@ -15,3 +15,4 @@
 
 from .agent import Agent
 from .value_iteration import GviAgent, ValueIterationAgent, DbsValueIterationAgent
+from .q_learning import QLearningAgent
