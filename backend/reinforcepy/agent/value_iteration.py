@@ -20,9 +20,10 @@ import math
 import copy
 
 import numpy as np
+# from numpy import linalg as LA
 
 from .agent import Agent
-from reinforcepy.util.math_utils import boltzmann_softmax
+from reinforcepy.util.math_utils import boltzmann_softmax, vector_norm
 
 class GviAgent(Agent):
     """Generialized value iteration.
@@ -103,3 +104,18 @@ class DbsValueIterationAgent(GviAgent):
         beta = self.beta_function(self.current_step)
         
         return boltzmann_softmax(q_array, beta)
+
+class DnsValueIterationAgent(GviAgent):
+    """Value iteration with the Dynamic Norm Softmax (DNS) operator.
+    """
+
+    def __init__(self, order_function, name="DnsValueIterationAgent", **kwds):
+        super().__init__(name=name, **kwds)
+
+        self.order_function = order_function
+
+    def operator(self, q_array):
+        order = self.order_function(self.current_step)
+        
+        # return LA.norm(q_array, order)
+        return vector_norm(q_array, order)

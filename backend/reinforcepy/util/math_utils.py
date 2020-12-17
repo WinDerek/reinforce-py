@@ -15,6 +15,8 @@
 """Some utility functions for mathematics.
 """
 
+import math
+
 import numpy as np
 
 def infinity_norm(x_vector):
@@ -29,3 +31,6 @@ def boltzmann_softmax(x_list, beta):
     denominator = sum([ np.exp(beta * (x - x_max)) for x in x_list ])
 
     return numerator / denominator
+
+def vector_norm(x_list, order):
+    return math.pow(sum([ math.pow(abs(x), order) for x in x_list ]), 1 / order)

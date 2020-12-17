@@ -14,5 +14,5 @@
 # limitations under the License.
 
 from .agent import Agent
-from .value_iteration import GviAgent, ValueIterationAgent, DbsValueIterationAgent
+from .value_iteration import GviAgent, ValueIterationAgent, DbsValueIterationAgent, DnsValueIterationAgent
 from .q_learning import QLearningAgent
