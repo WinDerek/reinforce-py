@@ -40,7 +40,8 @@ VALUE_ITERATION_CONFIG = {
 Q_LEARNING_CONFIG = {
     'discount': 0.9,
     'episode_num': 500,
-    'episode_max_length': 300
+    'episode_max_length': 300,
+    'repetition_num': 100
 }
 
 # DBS DQN settings

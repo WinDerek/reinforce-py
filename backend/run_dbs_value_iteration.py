@@ -69,14 +69,32 @@ print(grid_world_env.print_info())
 
 # Create the DBS value iteration agents
 agent_list = []
+# 0
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 0.1$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 0.1, in_place=False))
+# 1
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 1$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 1, in_place=False))
+# 2
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 10$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 10, in_place=False))
+# 3
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 100$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 100, in_place=False))
+# 4
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = 1000$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: 1000, in_place=False))
+# 5
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: t, in_place=False))
+# 6
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t^2$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: math.pow(t, 2), in_place=False))
+# 7
 agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t^3$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: math.pow(t, 3), in_place=False))
+# 8
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = \sqrt{t}$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: math.pow(t, 0.5), in_place=False))
+# 9
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = \log t$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: math.log(t), in_place=False))
+# 10
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t \log t$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: t * math.log(t), in_place=False))
+# 11
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t^2 \log t$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: math.pow(t, 2) * math.log(t), in_place=False))
+# 12
+agent_list.append(DbsValueIterationAgent(name=r"$\beta_t = t^3 \log t$", discount=config['discount'], env=copy.deepcopy(grid_world_env), beta_function=lambda t: math.pow(t, 3) * math.log(t), in_place=False))
 
 # Run the agents one by one
 value_loss_2darray = np.zeros((len(agent_list), config['episode_max_length'] * config['episode_num']), dtype=float)

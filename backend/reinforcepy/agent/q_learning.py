@@ -45,6 +45,9 @@ class QLearningAgent(Agent):
         self.env.current_state = self.current_state
     
     def take_action(self):
+        # Increment the current step
+        self.current_step += 1
+
         # Get the index of the current state in the state space
         current_state_index = self.env.state_space.index(self.current_state)
 
@@ -73,9 +76,6 @@ class QLearningAgent(Agent):
 
         # Move on to the next state
         self.current_state = state_to
-        
-        # Increment the current step
-        self.current_step += 1
 
         return done
     

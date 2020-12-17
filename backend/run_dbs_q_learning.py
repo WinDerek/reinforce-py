@@ -34,6 +34,9 @@ from dbs.config import GRID_WORLD
 total_begin_time = time.time()
 
 def run_agent(agent):
+    # Reset the agent
+    agent.reset()
+
     number_of_step_to_goal_array = np.zeros(config['episode_num'], dtype=int)
     for episode_index in range(config['episode_num']):
         for step_index in range(config['episode_max_length']):
@@ -65,22 +68,32 @@ print(grid_world_env.print_info())
 
 # Create the agents
 agent_list = []
-agent_list.append(QLearningAgent(name=r"Q-learning", discount=config['discount'], env=copy.deepcopy(grid_world_env), epsilon=0.01, alpha=0.01))
+agent_list.append(QLearningAgent(name=r"Q-learning", discount=config['discount'], env=copy.deepcopy(grid_world_env), epsilon=0.1, alpha=0.00001))
 
 # Run the agents one by one
-number_of_step_to_goal_2darray = np.zeros((len(agent_list), config['episode_num']), dtype=int)
+number_of_step_to_goal_3darray = np.zeros((config['repetition_num'], len(agent_list), config['episode_num']), dtype=int)
 for agent_index, agent in enumerate(agent_list):
     begin_time = time.time()
 
-    number_of_step_to_goal_array = run_agent(agent)
-    number_of_step_to_goal_2darray[agent_index] = number_of_step_to_goal_array
+    # Run the agent for a number of repetitions
+    for repetition_index in range(config['repetition_num']):
+        repetition_begin_time = time.time()
+
+        number_of_step_to_goal_array = run_agent(agent)
+        number_of_step_to_goal_3darray[repetition_index][agent_index] = number_of_step_to_goal_array
+
+        repetition_end_time = time.time()
+        print("    Repetition #{:d} finished in {:s}.".format(repetition_index + 1, format_time(repetition_end_time - repetition_begin_time)))
 
     end_time = time.time()
     print("Agent {:s} finished in {:s}.".format(agent.name, format_time(end_time - begin_time)))
+# Calculate the averaged results
+averaged_number_of_step_to_goal_2darray = np.mean(number_of_step_to_goal_3darray, axis=0, dtype=np.float64)
 
 # Dump the experiments result
 experiments_results = {
-    'number_of_step_to_goal_2darray': number_of_step_to_goal_2darray,
+    'number_of_step_to_goal_3darray': number_of_step_to_goal_3darray,
+    'averaged_number_of_step_to_goal_2darray': averaged_number_of_step_to_goal_2darray,
     'agent_name_list': [ agent.name for agent in agent_list ]
 }
 filename = "dbs_q_learning_experiments_results.pkl"

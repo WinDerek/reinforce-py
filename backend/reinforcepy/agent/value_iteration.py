@@ -50,6 +50,9 @@ class GviAgent(Agent):
         super().reset()
 
     def take_action(self):
+        # Increment the current step
+        self.current_step += 1
+
         for state_index, state in enumerate(self.env.state_space):
             old_v_array = copy.deepcopy(self.v_array)
 
@@ -79,9 +82,6 @@ class GviAgent(Agent):
             # print("s = ", state, ", actions = ", self.env.actions_given_state(state))
             # print("q(s, .) = ", self.q_2darray[state_index][self.env.actions_given_state(state)])
             # print("v(s) = operator(q(s, .)) = ", self.v_array[state_index])
-        
-        # Increment the current step
-        self.current_step += 1
     
     def operator(self, q_array):
         raise NotImplementedError
