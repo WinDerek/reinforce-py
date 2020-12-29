@@ -68,7 +68,7 @@ print(grid_world_env.print_info())
 
 # Create the agents
 agent_list = []
-agent_list.append(QLearningAgent(name=r"Q-learning", discount=config['discount'], env=copy.deepcopy(grid_world_env), epsilon=0.1, alpha=0.00001))
+agent_list.append(QLearningAgent(name=r"Q-learning", discount=config['discount'], env=copy.deepcopy(grid_world_env), epsilon=0.1, alpha=0.1))
 
 # Run the agents one by one
 number_of_step_to_goal_3darray = np.zeros((config['repetition_num'], len(agent_list), config['episode_num']), dtype=int)

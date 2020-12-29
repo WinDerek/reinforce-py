@@ -85,6 +85,8 @@ agent_list.append(DnsValueIterationAgent(name=r"DNS with $p_t = 18$", discount=c
 agent_list.append(DnsValueIterationAgent(name=r"DNS with $p_t = t$", discount=config['discount'], env=copy.deepcopy(grid_world_env), order_function=lambda t: t, in_place=False))
 # 7
 agent_list.append(ValueIterationAgent(name=r"(original) value iteration", discount=config['discount'], env=copy.deepcopy(grid_world_env), in_place=False))
+# 8
+agent_list.append(DnsValueIterationAgent(name=r"DNS with $p_t = \min (t, 100)$", discount=config['discount'], env=copy.deepcopy(grid_world_env), order_function=lambda t: min(t, 100), in_place=False))
 
 # Run the agents one by one
 value_loss_2darray = np.zeros((len(agent_list), config['episode_max_length'] * config['episode_num']), dtype=float)

@@ -13,6 +13,15 @@ $ pip install -U flask-cors
 $ pip install jupyterlab
 ```
 
+**Tensorflow Environment**
+
+```shell
+$ conda create --name tensorflow_env python=3.8
+$ conda activate tensorflow_env
+$ conda install pip
+$ pip install tensorflow
+```
+
 ## 2. Experiments
 
 ### 2.1 DBS value iteration
