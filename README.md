@@ -25,6 +25,16 @@
 
 <img alt="Grid World: DQN" src="./figure/puck_world_dqn.png" width="100%" />
 
+## Development
+
+This repository uses submodule, so use the following command to clone this repository:
+
+```shell
+$ git clone --recurse-submodules git@github.com:neo-derek/reinforce-py.git
+```
+
+If you forgot to add the `--recurse-submodules` option when cloning this repository, you can use `git submodule update --init --recursive`.
+
 ## TODO
 
 - [ ] Make grids perfect square

@@ -3,7 +3,6 @@ import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import GridWorldDp from '../views/GridWorldDp.vue';
 import GridWorldTd from '../views/GridWorldTd.vue';
-import GridWorldDbs from '../views/GridWorldDbs.vue';
 import PuckWorldDqn from '../views/PuckWorldDqn.vue';
 import WaterWorldDqn from '../views/WaterWorldDqn.vue';
 
@@ -29,11 +28,6 @@ const routes = [
     path: '/grid-world/td',
     name: 'GridWorldTd',
     component: GridWorldTd,
-  },
-  {
-    path: '/grid-world/dbs',
-    name: 'GridWorldDbs',
-    component: GridWorldDbs
   },
   {
     path: '/puck-world/dqn',
