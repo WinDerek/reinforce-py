@@ -35,7 +35,6 @@
 import PuckWorld from '@/components/PuckWorld.vue';
 import { AXIOS } from '../util/http-common.js';
 import axios from 'axios';
-import LineChart from '@/components/LineChart.vue';
 import ECharts from 'vue-echarts';
 import 'echarts/lib/chart/line';
 

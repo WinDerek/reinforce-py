@@ -55,6 +55,8 @@ export default {
           return this.puckWorldData.puckX + this.arrowRatio * this.puckWorldData.puckRadius;
       } else if (this.puckWorldData.action == 4) {
           return this.puckWorldData.puckX - this.arrowRatio * this.puckWorldData.puckRadius;
+      } else {
+        return "error";
       }
     },
     arrowHeadY () {
@@ -64,6 +66,8 @@ export default {
           return this.puckWorldData.puckY - this.arrowRatio * this.puckWorldData.puckRadius;
       } else if (this.puckWorldData.action == 3) {
           return this.puckWorldData.puckY + this.arrowRatio * this.puckWorldData.puckRadius;
+      } else {
+        return "error";
       }
     }
   },

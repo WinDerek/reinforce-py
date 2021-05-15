@@ -130,13 +130,13 @@ export default {
         return this.zeroColor;
       } else if (stateValue > 0.0) {
         stateValue = Math.min(stateValue, this.stateValueUpperBound);
-        var ratio = stateValue / this.stateValueUpperBound;
-        var aStr = Math.round(ratio * 255).toString(16);
+        let ratio = stateValue / this.stateValueUpperBound;
+        let aStr = Math.round(ratio * 255).toString(16);
         return this.positiveColor + aStr;
       } else {
         stateValue = Math.max(stateValue, -this.stateValueUpperBound);
-        var ratio = -stateValue / this.stateValueUpperBound;
-        var aStr = Math.round(ratio * 255).toString(16);
+        let ratio = -stateValue / this.stateValueUpperBound;
+        let aStr = Math.round(ratio * 255).toString(16);
         return this.negativeColor + aStr;
       }
     }
