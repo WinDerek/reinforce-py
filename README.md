@@ -9,23 +9,25 @@
 - Deep Q-learning for Q-learning with function approximation using neural networks
 - (TODO) Stochastic / Deterministic Policy Gradients and Actor Critic architectures for dealing with continuous action spaces
 
-## Screenshots
+## 1. Screenshots
 
-### Grid World: Dynamic Programming
+### 1.1 Grid World: Dynamic Programming
 
 <img alt="Grid World: Q-learning" src="./figure/grid_world_dp.png" width="100%" />
 
-### Grid World: Temporal-Difference (TD) Learning
+### 1.2 Grid World: Temporal-Difference (TD) Learning
 
 <img alt="Grid World: Q-learning GIF" src="./figure/screen_record_grid_world_q_learning.gif" width="100%" />
 
 <img alt="Grid World: Q-learning" src="./figure/grid_world_q_learning.png" width="100%" />
 
-### Puck World: DQN (Deep Q-learning)
+### 1.3 Puck World: DQN (Deep Q-learning)
 
 <img alt="Grid World: DQN" src="./figure/puck_world_dqn.png" width="100%" />
 
-## Development
+## 2. Instructions for developers
+
+### 2.1 Clone the repository
 
 This repository uses submodule, so use the following command to clone this repository:
 
@@ -34,6 +36,53 @@ $ git clone --recurse-submodules git@github.com:neo-derek/reinforce-py.git
 ```
 
 If you forgot to add the `--recurse-submodules` option when cloning this repository, you can use `git submodule update --init --recursive`.
+
+### 2.2 Setup the backend environment
+
+Setup a new conda environment:
+
+```shell
+$ conda create --name reinforce_py_env
+$ conda activate reinforce_py_env
+$ conda install pip
+$ pip install scipy
+$ pip install matplotlib
+$ pip install Flask==1.1.2
+$ pip install -U flask-cors
+$ pip install jupyterlab
+```
+
+### 2.3 Setup the frontend environment
+
+```shell
+$ cd frontend
+$ npm install
+```
+
+### 2.4 Start the website in development mode
+
+Start the backend app in development mode:
+```shell
+$ bash ./start_backend_dev.sh
+```
+
+Start the frontend app in development mode:
+```shell
+$ cd frontend
+$ bash ./start_frontend_dev.sh
+```
+
+Webpage address: `http://${your_machine_ip}:41551`
+
+### ~~2.5 Start the website in production mode~~ (work in progress)
+
+Start the backend app in production mode:
+
+```shell
+$ bash ./start_backend_prod.sh
+```
+
+Webpage address: `http://${your_machine_ip}:41552`
 
 ## TODO
 
@@ -54,7 +103,7 @@ If you forgot to add the `--recurse-submodules` option when cloning this reposit
 ## License
 
 ```
-Copyright 2020 Jianfeng Hou <frankderekdick@gmail.com>
+Copyright 2021 Jianfeng Hou, frankderekdick@gmail.com
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

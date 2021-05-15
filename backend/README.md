@@ -1,19 +1,8 @@
 # Backend
 
-## 1. Setup the conda environment
+This readme mainly contains some RL experiments which are not displayed in the main webpage. The following instructions are for initial research only.
 
-```shell
-$ conda create --name reinforce_py_env
-$ conda activate reinforce_py_env
-$ conda install pip
-$ pip install scipy
-$ pip install matplotlib
-$ pip install Flask==1.1.2
-$ pip install -U flask-cors
-$ pip install jupyterlab
-```
-
-## 2. Other environments
+## 1. Other environments
 
 **Tensorflow environment**
 
