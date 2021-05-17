@@ -32,7 +32,7 @@
 This repository uses submodule, so use the following command to clone this repository:
 
 ```shell
-$ git clone --recurse-submodules git@github.com:neo-derek/reinforce-py.git
+$ git clone --recurse-submodules https://github.com/WinDerek/reinforce-py.git
 ```
 
 If you forgot to add the `--recurse-submodules` option when cloning this repository, you can use `git submodule update --init --recursive`.
