@@ -29,13 +29,13 @@
 
 ### 2.1 Clone the repository
 
-This repository uses submodule, so use the following command to clone this repository:
+This repository uses submodule, so you need to use the following command to clone this repository:
 
 ```shell
 $ git clone --recurse-submodules https://github.com/WinDerek/reinforce-py.git
 ```
 
-If you forgot to add the `--recurse-submodules` option when cloning this repository, you can use `git submodule update --init --recursive`.
+If you forgot to add the `--recurse-submodules` option while cloning this repository, you can use `git submodule update --init --recursive`.
 
 ### 2.2 Setup the backend environment
 
@@ -74,31 +74,10 @@ $ bash ./start_frontend_dev.sh
 
 Webpage address: `http://${your_machine_ip}:41551`
 
-### ~~2.5 Start the website in production mode~~ (work in progress)
-
-Start the backend app in production mode:
-
-```shell
-$ bash ./start_backend_prod.sh
-```
-
-Webpage address: `http://${your_machine_ip}:41552`
-
 ## TODO
 
-- [ ] Make grids perfect square
 - [ ] Adds the documentation (instruction) for each playground
-- [x] Refine the arrows
 - [ ] Replace HTTP with socket
-- [ ] More responsive for wide or tall screens
-- [ ] Modify page title
-- [ ] More elegant way of deep cloning using lodash
-- [ ] Dark/light themes
-- [ ] Functionality to play with trained policy
-- [ ] Tackle the problem of being cornered by some local loop or local optimum (maybe limit the actions limit of an episode)
-- [ ] RL algorithm for 2048 game
-- [ ] Adds the functionality to import/export grid data in JSON format
-- [ ] About the deviation probability: consider larger probability of starting from unexplored states (grids). What's the relationship between this idea and on/off-policy methods?
 
 ## License
 
